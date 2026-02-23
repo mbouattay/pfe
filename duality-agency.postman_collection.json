@@ -1,0 +1,518 @@
+{
+    "info": {
+        "name": "Duality Agency API",
+        "description": "Collection complète pour tester l'API NestJS - Duality Agency\n\n🔐 **Auth flow:**\n1. Lance d'abord **POST /auth/login** pour obtenir un access_token\n2. Le token est automatiquement sauvegardé dans la variable `token` via le script de test\n3. Toutes les routes protégées utilisent `Bearer {{token}}` automatiquement",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:3000/api",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "item": [
+        {
+            "name": "🔐 Auth",
+            "item": [
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200 || pm.response.code === 201) {",
+                                    "    const body = pm.response.json();",
+                                    "    if (body.access_token) {",
+                                    "        pm.collectionVariables.set('token', body.access_token);",
+                                    "        console.log('✅ Token sauvegardé:', body.access_token.substring(0, 30) + '...');",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@duality.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE — Pas de token requis\n\nRécupère un access_token JWT. Le token est automatiquement sauvegardé dans la variable `token` de la collection."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "👤 Clients",
+            "item": [
+                {
+                    "name": "Créer un client",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"client@example.com\",\n  \"password\": \"password123\",\n  \"nomSociete\": \"Acme Corp\",\n  \"localisation\": \"Paris, France\",\n  \"telephone\": \"+33 6 12 34 56 78\",\n  \"avatar\": \"https://example.com/avatar.png\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/clients",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "clients"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\nCrée un nouveau client. Les champs `telephone` et `avatar` sont optionnels."
+                    }
+                },
+                {
+                    "name": "Lister tous les clients",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/clients",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "clients"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE (@Public) — Pas de token requis\n\nRetourne la liste de tous les clients."
+                    }
+                },
+                {
+                    "name": "Obtenir un client par ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/clients/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "clients",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\nRetourne les détails d'un client. Remplace `1` par l'ID souhaité."
+                    }
+                },
+                {
+                    "name": "Modifier un client",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nomSociete\": \"Acme Corp Updated\",\n  \"localisation\": \"Lyon, France\",\n  \"telephone\": \"+33 6 99 88 77 66\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/clients/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "clients",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\nMet à jour un client. Tous les champs sont optionnels (PATCH partiel)."
+                    }
+                },
+                {
+                    "name": "Supprimer un client",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/clients/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "clients",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\nSupprime un client par son ID."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "👷 Employés",
+            "item": [
+                {
+                    "name": "Créer un employé",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"employe@duality.com\",\n  \"password\": \"password123\",\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Jean\",\n  \"gradeId\": 1,\n  \"telephone\": \"+33 6 11 22 33 44\",\n  \"avatar\": \"https://example.com/avatar.png\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/employers",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "employers"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\nCrée un nouvel employé. Le `gradeId` doit correspondre à un grade existant. `telephone` et `avatar` sont optionnels."
+                    }
+                },
+                {
+                    "name": "Lister tous les employés",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/employers",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "employers"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                },
+                {
+                    "name": "Obtenir un employé par ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/employers/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "employers",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                },
+                {
+                    "name": "Modifier un employé",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nom\": \"Martin\",\n  \"prenom\": \"Pierre\",\n  \"gradeId\": 2\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/employers/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "employers",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                },
+                {
+                    "name": "Supprimer un employé",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/employers/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "employers",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🏅 Grades",
+            "item": [
+                {
+                    "name": "Créer un grade",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nom\": \"Développeur Senior\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/grades",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "grades"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                },
+                {
+                    "name": "Lister tous les grades",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/grades",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "grades"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                },
+                {
+                    "name": "Obtenir un grade par ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/grades/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "grades",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                },
+                {
+                    "name": "Modifier un grade",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nom\": \"Lead Développeur\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/grades/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "grades",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                },
+                {
+                    "name": "Supprimer un grade",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/grades/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "grades",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🛡️ Administrateurs",
+            "item": [
+                {
+                    "name": "Créer un administrateur",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin2@duality.com\",\n  \"password\": \"Admin@1234\",\n  \"telephone\": \"+33 6 55 66 77 88\",\n  \"avatar\": \"https://example.com/admin-avatar.png\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/administrateur",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "administrateur"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\n`telephone` et `avatar` sont optionnels."
+                    }
+                },
+                {
+                    "name": "Lister tous les administrateurs",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/administrateur",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "administrateur"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                },
+                {
+                    "name": "Obtenir un administrateur par ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/administrateur/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "administrateur",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                },
+                {
+                    "name": "Modifier un administrateur",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin-updated@duality.com\",\n  \"telephone\": \"+33 6 00 11 22 33\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/administrateur/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "administrateur",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                },
+                {
+                    "name": "Supprimer un administrateur",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/administrateur/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "administrateur",
+                                "1"
+                            ]
+                        },
+                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                    }
+                }
+            ]
+        }
+    ]
+}

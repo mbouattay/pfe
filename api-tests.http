@@ -1,0 +1,270 @@
+### Variables (optionnel)
+@baseUrl = http://localhost:3000/api
+@clientId = 1
+@gradeId = 1
+@adminId = 1
+@token = your-jwt-token-here
+
+# ========== AUTHENTIFICATION ==========
+
+### Login - Client
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "contact@ma-societe.fr",
+  "password": "motdepasse123"
+}
+
+### Login - Employé
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "jean.dupont@agence.fr",
+  "password": "motdepasse123"
+}
+
+### Erreur 401 - Identifiants incorrects
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "wrong@email.com",
+  "password": "wrongpassword"
+}
+
+### Exemple : Utiliser le token pour accéder à une route protégée
+### 1. D'abord, connectez-vous et copiez le access_token de la réponse
+### 2. Remplacez {{token}} ci-dessous par votre token
+### 3. Décommentez la requête suivante pour tester
+
+# GET {{baseUrl}}/clients
+# Authorization: Bearer {{token}}
+
+# ========== CLIENTS ==========
+
+### 1. Créer un client
+POST {{baseUrl}}/clients
+Content-Type: application/json
+
+{
+  "email": "contact@ma-societe.fr",
+  "password": "motdepasse123",
+  "nomSociete": "Ma Société SARL",
+  "localisation": "Paris, France"
+}
+
+### 2. Créer un client avec champs optionnels
+POST {{baseUrl}}/clients
+Content-Type: application/json
+
+{
+  "email": "autre@client.fr",
+  "password": "secret456",
+  "nomSociete": "Autre Client",
+  "localisation": "Lyon",
+  "telephone": "+33612345678",
+  "avatar": "https://example.com/avatar.png"
+}
+
+### 3. Lister tous les clients (nécessite authentification)
+GET {{baseUrl}}/clients
+Authorization: Bearer {{token}}
+
+### 4. Récupérer un client par ID
+GET {{baseUrl}}/clients/{{clientId}}
+
+### 5. Erreur 404 - Client introuvable
+GET {{baseUrl}}/clients/999
+
+### 6. Mettre à jour un client (tous les champs sont optionnels)
+PATCH {{baseUrl}}/clients/{{clientId}}
+Content-Type: application/json
+
+{
+  "nomSociete": "Ma Société SAS",
+  "localisation": "Lyon, France",
+  "telephone": "+33612345678"
+}
+
+### 7. Mettre à jour email et mot de passe
+PATCH {{baseUrl}}/clients/{{clientId}}
+Content-Type: application/json
+
+{
+  "email": "nouveau@email.fr",
+  "password": "nouveaumotdepasse"
+}
+
+### 8. Supprimer un client
+DELETE {{baseUrl}}/clients/{{clientId}}
+
+### 9. Erreur 409 - Email déjà utilisé (réexécuter la requête 1)
+POST {{baseUrl}}/clients
+Content-Type: application/json
+
+{
+  "email": "contact@ma-societe.fr",
+  "password": "motdepasse123",
+  "nomSociete": "Ma Société SARL",
+  "localisation": "Paris, France"
+}
+
+# ========== GRADES ==========
+
+### 10. Créer un grade
+POST {{baseUrl}}/grades
+Content-Type: application/json
+
+{
+  "nom": "Développeur Senior"
+}
+
+### 11. Créer d'autres grades
+POST {{baseUrl}}/grades
+Content-Type: application/json
+
+{ "nom": "Chef de projet" }
+
+###
+POST {{baseUrl}}/grades
+Content-Type: application/json
+
+{ "nom": "Designer" }
+
+### 12. Lister tous les grades (getAll)
+GET {{baseUrl}}/grades
+
+### 13. Récupérer un grade par ID
+GET {{baseUrl}}/grades/{{gradeId}}
+
+### 14. Modifier un grade
+PATCH {{baseUrl}}/grades/{{gradeId}}
+Content-Type: application/json
+
+{
+  "nom": "Développeur Lead"
+}
+
+### 15. Supprimer un grade (échoue si des employés y sont rattachés)
+DELETE {{baseUrl}}/grades/{{gradeId}}
+
+### 16. Erreur 404 - Grade introuvable
+GET {{baseUrl}}/grades/999
+
+### 17. Erreur 409 - Nom de grade déjà existant
+POST {{baseUrl}}/grades
+Content-Type: application/json
+
+{ "nom": "Développeur Lead" }
+
+# ========== EMPLOYERS ==========
+
+### 18. Créer un employé (gradeId doit exister, ex: 1)
+POST {{baseUrl}}/employers
+Content-Type: application/json
+
+{
+  "email": "jean.dupont@agence.fr",
+  "password": "motdepasse123",
+  "nom": "Dupont",
+  "prenom": "Jean",
+  "gradeId": 1
+}
+
+### 19. Créer un employé avec optionnels
+POST {{baseUrl}}/employers
+Content-Type: application/json
+
+{
+  "email": "marie.martin@agence.fr",
+  "password": "secret456",
+  "nom": "Martin",
+  "prenom": "Marie",
+  "gradeId": 1,
+  "telephone": "+33698765432",
+  "avatar": "https://example.com/avatar.png"
+}
+
+### 20. Lister tous les employés (getAll)
+GET {{baseUrl}}/employers
+
+### 21. Récupérer un employé par ID
+GET {{baseUrl}}/employers/1
+
+### 22. Modifier un employé
+PATCH {{baseUrl}}/employers/1
+Content-Type: application/json
+
+{
+  "prenom": "Jean-Pierre",
+  "gradeId": 2
+}
+
+### 23. Supprimer un employé
+DELETE {{baseUrl}}/employers/1
+
+### 24. Erreur 404 - Employé introuvable
+GET {{baseUrl}}/employers/999
+
+### 25. Erreur 400 - Grade invalide (création avec gradeId inexistant)
+POST {{baseUrl}}/employers
+Content-Type: application/json
+
+{
+  "email": "test@test.fr",
+  "password": "password",
+  "nom": "Test",
+  "prenom": "User",
+  "gradeId": 999
+}
+
+# ========== ADMINISTRATEURS ==========
+
+### 26. Créer un administrateur
+POST {{baseUrl}}/administrateurs
+Content-Type: application/json
+
+{
+  "email": "admin@agence.fr",
+  "password": "admin123"
+}
+
+### 27. Créer un administrateur avec optionnels
+POST {{baseUrl}}/administrateurs
+Content-Type: application/json
+
+{
+  "email": "superadmin@agence.fr",
+  "password": "secret789",
+  "telephone": "+33600000000",
+  "avatar": "https://example.com/admin.png"
+}
+
+### 28. Lister tous les administrateurs
+GET {{baseUrl}}/administrateurs
+
+### 29. Récupérer un administrateur par ID
+GET {{baseUrl}}/administrateurs/{{adminId}}
+
+### 30. Modifier un administrateur
+PATCH {{baseUrl}}/administrateurs/{{adminId}}
+Content-Type: application/json
+
+{
+  "email": "admin-updated@agence.fr",
+  "telephone": "+33611111111"
+}
+
+### 31. Supprimer un administrateur
+DELETE {{baseUrl}}/administrateurs/{{adminId}}
+
+### 32. Login administrateur
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@agence.fr",
+  "password": "admin123"
+}

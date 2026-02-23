@@ -1,0 +1,204 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CLIENT
+  EMPLOYER
+  ADMIN
+}
+
+enum ProjectStatus {
+  EN_ATTENTE
+  EN_COURS
+  TERMINE
+  ANNULE
+}
+
+enum SprintStatus {
+  PLANIFIE
+  EN_COURS
+  TERMINE
+}
+
+enum TaskStatus {
+  A_FAIRE
+  EN_COURS
+  TERMINE
+}
+
+model Utilisateur {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      Role
+  avatar    String?
+  telephone String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  client        Client?
+  administrateur Administrateur?
+  employer      Employer?
+
+  @@map("utilisateurs")
+}
+
+// ─────────────────────────────────────────
+// CLIENT
+// ─────────────────────────────────────────
+
+model Client {
+  id           Int    @id @default(autoincrement())
+  nomSociete   String
+  localisation String
+  utilisateurId Int          @unique
+  utilisateur   Utilisateur  @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  projects Project[]
+  @@map("clients")
+}
+
+// ─────────────────────────────────────────
+// ADMINISTRATEUR
+// ─────────────────────────────────────────
+
+model Administrateur {
+  id Int @id @default(autoincrement())
+
+  utilisateurId Int          @unique
+  utilisateur   Utilisateur  @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  @@map("administrateurs")
+}
+
+// ─────────────────────────────────────────
+// GRADE
+// ─────────────────────────────────────────
+
+model Grade {
+  id  Int    @id @default(autoincrement())
+  nom String @unique
+  employers Employer[]
+  @@map("grades")
+}
+// ─────────────────────────────────────────
+// EMPLOYER
+// ─────────────────────────────────────────
+
+model Employer {
+  id     Int    @id @default(autoincrement())
+  nom    String
+  prenom String
+  utilisateurId Int          @unique
+  utilisateur   Utilisateur  @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  gradeId Int
+  grade   Grade @relation(fields: [gradeId], references: [id]) 
+  @@map("employers")
+}
+
+// ─────────────────────────────────────────
+// PROJECT (base)
+// ─────────────────────────────────────────
+
+model Project {
+  id          Int           @id @default(autoincrement())
+  titre       String
+  description String
+  dateDebut   DateTime
+  dateFin     DateTime
+  status      ProjectStatus @default(EN_ATTENTE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  clientId Int
+  client   Client @relation(fields: [clientId], references: [id])
+  webProject       WebProject?
+  marketingProject MarketingProject?
+
+  @@map("projects")
+}
+// ─────────────────────────────────────────
+// WEB PROJECT
+// ─────────────────────────────────────────
+
+model WebProject {
+  id Int @id @default(autoincrement())
+
+  projectId Int     @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  sprints Sprint[]
+
+  @@map("web_projects")
+}
+
+// ─────────────────────────────────────────
+// SPRINT
+// ─────────────────────────────────────────
+
+model Sprint {
+  id              Int          @id @default(autoincrement())
+  nom             String
+  status          SprintStatus @default(PLANIFIE)
+  goal            String?
+  dateDebut       DateTime
+  dateFin         DateTime
+  totalStoryPoints Int         @default(0)
+
+  webProjectId Int
+  webProject   WebProject @relation(fields: [webProjectId], references: [id], onDelete: Cascade)
+
+  sprintTasks SprintTask[]
+
+  @@map("sprints")
+}
+
+// ─────────────────────────────────────────
+// SPRINT TASKS
+// ─────────────────────────────────────────
+
+model SprintTask {
+  id          Int        @id @default(autoincrement())
+  titre       String
+  status      TaskStatus @default(A_FAIRE)
+  priority    Int        @default(1)
+  dateDebut   DateTime
+  storyPoints Int        @default(0)
+
+  sprintId Int
+  sprint   Sprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+
+  @@map("sprint_tasks")
+}
+
+// ─────────────────────────────────────────
+// MARKETING PROJECT
+// ─────────────────────────────────────────
+model MarketingProject {
+  id Int @id @default(autoincrement())
+
+  projectId Int     @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  tasks Task[]
+
+  @@map("marketing_projects")
+}
+// ─────────────────────────────────────────
+// TASKS
+// ─────────────────────────────────────────
+model Task {
+  id        Int        @id @default(autoincrement())
+  titre     String
+  dateDebut DateTime
+  dateFin   DateTime
+  status    TaskStatus @default(A_FAIRE)
+  marketingProjectId Int
+  marketingProject   MarketingProject @relation(fields: [marketingProjectId], references: [id], onDelete: Cascade)
+  @@map("tasks")
+}
