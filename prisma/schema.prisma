@@ -70,7 +70,6 @@ model Client {
 
 model Administrateur {
   id Int @id @default(autoincrement())
-
   utilisateurId Int          @unique
   utilisateur   Utilisateur  @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
   @@map("administrateurs")

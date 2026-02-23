@@ -6,9 +6,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ClientModule } from './modules/clients/client.module';
 import { GradeModule } from './modules/grades/grade.module';
-import { EmployerModule } from './modules/employers/employer.module';
+import { EmployerModule } from './modules/employeur/employeur.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AdministrateurModule } from './modules/administrateur/administrateur.module';
+import { WebProjectModule } from './modules/webProject/webProject.module';
+import { MarketingProjectModule } from './modules/marketingProject/marketingProject.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { MailModule } from './common/mail/mail.module';
 
@@ -22,6 +24,8 @@ import { MailModule } from './common/mail/mail.module';
     GradeModule,
     EmployerModule,
     AdministrateurModule,
+    WebProjectModule,
+    MarketingProjectModule,
   ],
   controllers: [AppController],
   providers: [
@@ -32,4 +36,4 @@ import { MailModule } from './common/mail/mail.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

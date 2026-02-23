@@ -6,7 +6,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { CreateEmployerDto, UpdateEmployerDto } from './employer.dto';
+import { CreateEmployerDto, UpdateEmployerDto } from './employeur.dto';
 import { hashPassword } from '../../common/utils/password.util';
 import { Role } from '../../common/enums/role.enum';
 import { MailService } from '../../common/mail/mail.service';

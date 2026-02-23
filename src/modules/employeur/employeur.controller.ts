@@ -8,13 +8,13 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { EmployerService } from './employer.service';
-import { CreateEmployerDto, UpdateEmployerDto } from './employer.dto';
+import { EmployerService } from './employeur.service';
+import { CreateEmployerDto, UpdateEmployerDto } from './employeur.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('employers')
 export class EmployerController {
-  constructor(private readonly employerService: EmployerService) {}
+  constructor(private readonly employerService: EmployerService) { }
 
   @Post()
   @Public()
@@ -23,19 +23,19 @@ export class EmployerController {
   }
 
   @Get()
-    @Public()
+  @Public()
   findAll() {
     return this.employerService.findAll();
   }
 
   @Get(':id')
-    @Public()
+  @Public()
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.employerService.findOne(id);
   }
 
   @Patch(':id')
-    @Public()
+  @Public()
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateEmployerDto,
@@ -44,7 +44,7 @@ export class EmployerController {
   }
 
   @Delete(':id')
-    @Public()
+  @Public()
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.employerService.remove(id);
   }
