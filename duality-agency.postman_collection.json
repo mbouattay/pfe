@@ -454,7 +454,7 @@
                                 "clients"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\nCrée un nouveau client. Les champs `telephone` et `avatar` sont optionnels."
+                        "description": "� Route PUBLIQUE — Pas de token requis\n\nCrée un nouveau client. Les champs `telephone` et `avatar` sont optionnels."
                     }
                 },
                 {
@@ -490,7 +490,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\nRetourne les détails d'un client. Remplace `1` par l'ID souhaité."
+                        "description": "� Route PUBLIQUE — Pas de token requis\n\nRetourne les détails d'un client. Remplace `1` par l'ID souhaité."
                     }
                 },
                 {
@@ -517,7 +517,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\nMet à jour un client. Tous les champs sont optionnels (PATCH partiel)."
+                        "description": "� Route PUBLIQUE — Pas de token requis\n\nMet à jour un client. Tous les champs sont optionnels (PATCH partiel)."
                     }
                 },
                 {
@@ -534,7 +534,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\nSupprime un client par son ID."
+                        "description": "� Route PUBLIQUE — Pas de token requis\n\nSupprime un client par son ID."
                     }
                 }
             ]
@@ -565,7 +565,7 @@
                                 "employers"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\nCrée un nouvel employé. Le `gradeId` doit correspondre à un grade existant. `telephone` et `avatar` sont optionnels."
+                        "description": "� Route PUBLIQUE — Pas de token requis\n\nCrée un nouvel employé. Le `gradeId` doit correspondre à un grade existant. `telephone` et `avatar` sont optionnels."
                     }
                 },
                 {
@@ -581,7 +581,7 @@
                                 "employers"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "� Route PUBLIQUE"
                     }
                 },
                 {
@@ -598,7 +598,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "� Route PUBLIQUE"
                     }
                 },
                 {
@@ -625,7 +625,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "� Route PUBLIQUE"
                     }
                 },
                 {
@@ -642,7 +642,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "� Route PUBLIQUE"
                     }
                 }
             ]
@@ -673,7 +673,7 @@
                                 "grades"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "� Route PUBLIQUE"
                     }
                 },
                 {
@@ -689,7 +689,7 @@
                                 "grades"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "� Route PUBLIQUE"
                     }
                 },
                 {
@@ -706,7 +706,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "� Route PUBLIQUE"
                     }
                 },
                 {
@@ -733,7 +733,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "� Route PUBLIQUE"
                     }
                 },
                 {
@@ -750,7 +750,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "� Route PUBLIQUE"
                     }
                 }
             ]
@@ -773,52 +773,66 @@
                             "raw": "{\n  \"email\": \"admin2@duality.com\",\n  \"password\": \"Admin@1234\",\n  \"telephone\": \"+33 6 55 66 77 88\",\n  \"avatar\": \"https://example.com/admin-avatar.png\"\n}"
                         },
                         "url": {
-                            "raw": "{{baseUrl}}/administrateur",
+                            "raw": "{{baseUrl}}/administrateurs",
                             "host": [
                                 "{{baseUrl}}"
                             ],
                             "path": [
-                                "administrateur"
+                                "administrateurs"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis\n\n`telephone` et `avatar` sont optionnels."
+                        "description": "🔓 Route PUBLIQUE — Pas de token requis\n\n`telephone` et `avatar` sont optionnels."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🌐 Projets Web",
+            "item": [
+                {
+                    "name": "Créer un projet web",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"titre\": \"E-commerce Platform\",\n  \"description\": \"Développement d'une plateforme e-commerce complète\",\n  \"dateDebut\": \"2024-03-01T00:00:00.000Z\",\n  \"dateFin\": \"2024-06-01T00:00:00.000Z\",\n  \"clientId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/web-projects",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "web-projects"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE"
                     }
                 },
                 {
-                    "name": "Lister tous les administrateurs",
+                    "name": "Lister tous les projets web",
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/administrateur",
+                            "raw": "{{baseUrl}}/web-projects",
                             "host": [
                                 "{{baseUrl}}"
                             ],
                             "path": [
-                                "administrateur"
+                                "web-projects"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "🔓 Route PUBLIQUE"
                     }
                 },
                 {
-                    "name": "Obtenir un administrateur par ID",
-                    "request": {
-                        "method": "GET",
-                        "url": {
-                            "raw": "{{baseUrl}}/administrateur/1",
-                            "host": [
-                                "{{baseUrl}}"
-                            ],
-                            "path": [
-                                "administrateur",
-                                "1"
-                            ]
-                        },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
-                    }
-                },
-                {
-                    "name": "Modifier un administrateur",
+                    "name": "Modifier un projet web",
                     "request": {
                         "method": "PATCH",
                         "header": [
@@ -829,36 +843,309 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"email\": \"admin-updated@duality.com\",\n  \"telephone\": \"+33 6 00 11 22 33\"\n}"
+                            "raw": "{\n  \"titre\": \"E-commerce Platform v2\",\n  \"description\": \"Mise à jour de la description\"\n}"
                         },
                         "url": {
-                            "raw": "{{baseUrl}}/administrateur/1",
+                            "raw": "{{baseUrl}}/web-projects/1",
                             "host": [
                                 "{{baseUrl}}"
                             ],
                             "path": [
-                                "administrateur",
+                                "web-projects",
                                 "1"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "🔓 Route PUBLIQUE"
                     }
                 },
                 {
-                    "name": "Supprimer un administrateur",
+                    "name": "Supprimer un projet web",
                     "request": {
                         "method": "DELETE",
                         "url": {
-                            "raw": "{{baseUrl}}/administrateur/1",
+                            "raw": "{{baseUrl}}/web-projects/1",
                             "host": [
                                 "{{baseUrl}}"
                             ],
                             "path": [
-                                "administrateur",
+                                "web-projects",
                                 "1"
                             ]
                         },
-                        "description": "🔒 Route PROTÉGÉE — Token JWT requis"
+                        "description": "🔓 Route PUBLIQUE"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📈 Projets Marketing",
+            "item": [
+                {
+                    "name": "Créer un projet marketing",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"titre\": \"Campagne Social Media\",\n  \"description\": \"Campagne publicitaire sur Facebook et Instagram\",\n  \"dateDebut\": \"2024-04-01T00:00:00.000Z\",\n  \"dateFin\": \"2024-05-01T00:00:00.000Z\",\n  \"clientId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/marketing-projects",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "marketing-projects"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE"
+                    }
+                },
+                {
+                    "name": "Lister tous les projets marketing",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/marketing-projects",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "marketing-projects"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE"
+                    }
+                },
+                {
+                    "name": "Modifier un projet marketing",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"titre\": \"Campagne Social Media Q2\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/marketing-projects/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "marketing-projects",
+                                "1"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE"
+                    }
+                },
+                {
+                    "name": "Supprimer un projet marketing",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/marketing-projects/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "marketing-projects",
+                                "1"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📅 Sprints",
+            "item": [
+                {
+                    "name": "Créer un sprint",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nom\": \"Sprint 1\",\n  \"status\": \"PLANIFIE\",\n  \"goal\": \"Setup initial\",\n  \"dateDebut\": \"2024-03-01T00:00:00.000Z\",\n  \"dateFin\": \"2024-03-15T00:00:00.000Z\",\n  \"webProjectId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/sprints",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "sprints"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE"
+                    }
+                },
+                {
+                    "name": "Lister tous les sprints",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/sprints",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "sprints"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE"
+                    }
+                },
+                {
+                    "name": "Obtenir un sprint par ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/sprints/1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "sprints",
+                                "1"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📝 Sprint Tasks",
+            "item": [
+                {
+                    "name": "Créer une tâche de sprint",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"titre\": \"Configuration Prisma\",\n  \"status\": \"A_FAIRE\",\n  \"priority\": 1,\n  \"dateDebut\": \"2024-03-01T00:00:00.000Z\",\n  \"storyPoints\": 3,\n  \"sprintId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/sprint-tasks",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "sprint-tasks"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE"
+                    }
+                },
+                {
+                    "name": "Lister toutes les tâches de sprint",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/sprint-tasks",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "sprint-tasks"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📋 Tasks (Marketing)",
+            "item": [
+                {
+                    "name": "Créer une tâche marketing",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"titre\": \"Création des visuels\",\n  \"dateDebut\": \"2024-04-01T00:00:00.000Z\",\n  \"dateFin\": \"2024-04-05T00:00:00.000Z\",\n  \"marketingProjectId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/tasks",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "tasks"
+                            ]
+                        },
+                        "description": "🔓 Route PUBLIQUE"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🤖 AI Service",
+            "description": "Endpoints IA : génération de sprints à partir d'un cahier des charges PDF (Grok/xAI).",
+            "item": [
+                {
+                    "name": "Générer Sprints (Cahier des charges PDF)",
+                    "request": {
+                        "method": "POST",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": [],
+                                    "description": "PDF du cahier des charges (max 10 Mo)"
+                                },
+                                {
+                                    "key": "projectId",
+                                    "value": "1",
+                                    "type": "text",
+                                    "description": "ID du Project lié au WebProject"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/ai/generate-sprints",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "ai",
+                                "generate-sprints"
+                            ]
+                        },
+                        "description": "🔐 Route protégée — Token requis (Bearer {{token}})\n\nEnvoie un PDF « cahier des charges » en multipart/form-data. Le backend :\n1. Extrait le texte du PDF\n2. Envoie le texte à Grok (xAI)\n3. Génère des sprints et tâches Scrum (14 j, max 40 SP, Fibonacci)\n4. Enregistre les sprints et SprintTasks en base pour le WebProject du projet donné.\n\n**Body :**\n- `file` (file) : PDF uniquement, max 10 Mo\n- `projectId` (number) : ID du Project dont le WebProject recevra les sprints\n\n**Réponse :** `{ \"created\": number, \"sprintIds\": number[] }`"
                     }
                 }
             ]

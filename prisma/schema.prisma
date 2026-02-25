@@ -150,7 +150,7 @@ model Project {
 
 model WebProject {
   id Int @id @default(autoincrement())
-
+  cahier_de_charger String?
   projectId Int     @unique
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
@@ -194,7 +194,6 @@ model SprintTask {
 
   sprintId Int
   sprint   Sprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
-
   @@map("sprint_tasks")
 }
 
