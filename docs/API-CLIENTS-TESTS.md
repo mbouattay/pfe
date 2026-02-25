@@ -158,8 +158,9 @@ Réponse typique (400) avec `message` décrivant les erreurs de validation.
 
 ## Résumé des endpoints
 
-| Méthode | URL              | Description        |
-|---------|------------------|--------------------|
-| POST    | /api/clients     | Créer un client    |
-| GET     | /api/clients     | Liste des clients  |
-| GET     | /api/clients/:id | Détail d’un client |
+| Méthode | URL                                       | Description                                      |
+|---------|-------------------------------------------|--------------------------------------------------|
+| POST    | /api/clients                              | Créer un client                                  |
+| GET     | /api/clients                              | Liste des clients                                |
+| GET     | /api/clients/:id                          | Détail d’un client                               |
+| POST   | /api/planning/web-projects/:webProjectId/generate | Générer automatiquement les sprints et tâches (SprintTask) d’un projet web à partir d’un cahier des charges (texte ou fichier) |

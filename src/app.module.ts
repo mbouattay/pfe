@@ -11,6 +11,10 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AdministrateurModule } from './modules/administrateur/administrateur.module';
 import { WebProjectModule } from './modules/webProject/webProject.module';
 import { MarketingProjectModule } from './modules/marketingProject/marketingProject.module';
+import { TaskModule } from './modules/task/task.module';
+import { SprintModule } from './modules/sprint/sprint.module';
+import { SprintTaskModule } from './modules/sprintTask/sprintTask.module';
+import { AiModule } from './modules/ai/ai.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { MailModule } from './common/mail/mail.module';
 
@@ -26,6 +30,10 @@ import { MailModule } from './common/mail/mail.module';
     AdministrateurModule,
     WebProjectModule,
     MarketingProjectModule,
+    TaskModule,
+    SprintModule,
+    SprintTaskModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [
