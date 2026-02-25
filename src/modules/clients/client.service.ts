@@ -1,5 +1,9 @@
 import { PrismaService } from '../../prisma/prisma.service';
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateClientDto, UpdateClientDto } from './client.dto';
 import { hashPassword } from '../../common/utils/password.util';
 import { Role } from '../../common/enums/role.enum';
@@ -10,7 +14,7 @@ export class ClientService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
-  ) { }
+  ) {}
 
   async findAll() {
     return this.prisma.client.findMany({
@@ -136,13 +140,15 @@ export class ClientService {
       telephone?: string;
     } = {};
     if (dto.email !== undefined) utilisateurData.email = dto.email;
-    if (dto.password) utilisateurData.password = await hashPassword(dto.password);
+    if (dto.password)
+      utilisateurData.password = await hashPassword(dto.password);
     if (dto.avatar !== undefined) utilisateurData.avatar = dto.avatar;
     if (dto.telephone !== undefined) utilisateurData.telephone = dto.telephone;
 
     const clientData: { nomSociete?: string; localisation?: string } = {};
     if (dto.nomSociete !== undefined) clientData.nomSociete = dto.nomSociete;
-    if (dto.localisation !== undefined) clientData.localisation = dto.localisation;
+    if (dto.localisation !== undefined)
+      clientData.localisation = dto.localisation;
 
     const hasClientUpdates = Object.keys(clientData).length > 0;
     const hasUtilisateurUpdates = Object.keys(utilisateurData).length > 0;

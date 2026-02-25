@@ -13,6 +13,9 @@ import { WebProjectModule } from './modules/webProject/webProject.module';
 import { MarketingProjectModule } from './modules/marketingProject/marketingProject.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { MailModule } from './common/mail/mail.module';
+import { ChatModule } from './modules/chat/chat.module';
+import { NotificationModule } from './modules/notifications/notification.module';
+import { TimeModule } from './modules/time/time.module';
 
 @Module({
   imports: [
@@ -26,6 +29,9 @@ import { MailModule } from './common/mail/mail.module';
     AdministrateurModule,
     WebProjectModule,
     MarketingProjectModule,
+    ChatModule,
+    NotificationModule,
+    TimeModule,
   ],
   controllers: [AppController],
   providers: [
@@ -36,4 +42,4 @@ import { MailModule } from './common/mail/mail.module';
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

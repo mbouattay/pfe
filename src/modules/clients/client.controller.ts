@@ -29,22 +29,19 @@ export class ClientController {
   }
 
   @Get(':id')
-   @Public()
+  @Public()
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.clientService.findOne(id);
   }
 
   @Patch(':id')
-   @Public()
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateClientDto,
-  ) {
+  @Public()
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateClientDto) {
     return this.clientService.update(id, dto);
   }
 
   @Delete(':id')
-   @Public()
+  @Public()
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.clientService.remove(id);
   }

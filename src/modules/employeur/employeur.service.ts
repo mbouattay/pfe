@@ -34,7 +34,7 @@ export class EmployerService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
-  ) { }
+  ) {}
 
   async findAll() {
     return this.prisma.employer.findMany({

@@ -17,34 +17,31 @@ export class GradeController {
   constructor(private readonly gradeService: GradeService) {}
 
   @Post()
-    @Public()
+  @Public()
   create(@Body() dto: CreateGradeDto) {
     return this.gradeService.create(dto);
   }
 
   @Get()
-    @Public()
+  @Public()
   findAll() {
     return this.gradeService.findAll();
   }
 
   @Get(':id')
-    @Public()
+  @Public()
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.gradeService.findOne(id);
   }
 
   @Patch(':id')
-    @Public()
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateGradeDto,
-  ) {
+  @Public()
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateGradeDto) {
     return this.gradeService.update(id, dto);
   }
 
   @Delete(':id')
-    @Public()
+  @Public()
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.gradeService.remove(id);
   }

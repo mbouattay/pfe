@@ -14,7 +14,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('employers')
 export class EmployerController {
-  constructor(private readonly employerService: EmployerService) { }
+  constructor(private readonly employerService: EmployerService) {}
 
   @Post()
   @Public()

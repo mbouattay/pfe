@@ -48,7 +48,9 @@ export class GradeService {
       where: { nom: dto.nom.trim() },
     });
     if (exists) {
-      throw new ConflictException(`Un grade avec le nom "${dto.nom}" existe déjà`);
+      throw new ConflictException(
+        `Un grade avec le nom "${dto.nom}" existe déjà`,
+      );
     }
     return this.prisma.grade.create({
       data: { nom: dto.nom.trim() },
