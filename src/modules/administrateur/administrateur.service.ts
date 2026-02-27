@@ -1,33 +1,14 @@
 import { PrismaService } from '../../prisma/prisma.service';
-import {
-  Injectable,
-  ConflictException,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateAdministrateurDto, UpdateAdministrateurDto } from './administrateur.dto';
+import { Injectable, ConflictException } from '@nestjs/common';
+import { CreateAdministrateurDto } from './administrateur.dto';
 import { hashPassword } from '../../common/utils/password.util';
 import { Role } from '../../common/enums/role.enum';
 
-const administrateurSelect = {
-  id: true,
-  utilisateurId: true,
-  utilisateur: {
-    select: {
-      id: true,
-      email: true,
-      role: true,
-      avatar: true,
-      telephone: true,
-      createdAt: true,
-    },
-  },
-  _count: { select: { projects: true } },
-};
+// selection shape can be reintroduced when read endpoints are added
 
 @Injectable()
 export class AdministrateurService {
   constructor(private readonly prisma: PrismaService) {}
-
 
   async create(dto: CreateAdministrateurDto) {
     const exists = await this.prisma.utilisateur.findUnique({
@@ -66,8 +47,4 @@ export class AdministrateurService {
       },
     });
   }
-
- 
-
- 
 }

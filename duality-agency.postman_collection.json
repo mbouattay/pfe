@@ -62,7 +62,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"email\": \"admin@duality.com\",\n  \"password\": \"password123\"\n}"
+                            "raw": "{\n  \"email\": \"admin@duality.local\",\n  \"password\": \"Admin@123\"\n}"
                         },
                         "url": {
                             "raw": "{{baseUrl}}/auth/login",
@@ -75,6 +75,355 @@
                             ]
                         },
                         "description": "🔓 Route PUBLIQUE — Pas de token requis\n\nRécupère un access_token JWT. Le token est automatiquement sauvegardé dans la variable `token` de la collection."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "💬 Chat",
+            "item": [
+                {
+                    "name": "List Conversations",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/chat/conversations",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["chat", "conversations"]
+                        },
+                        "description": "Liste les conversations de l'utilisateur courant."
+                    }
+                },
+                {
+                    "name": "Create/Find Direct Conversation",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"userId\": 2\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/chat/direct",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["chat", "direct"]
+                        },
+                        "description": "Crée ou renvoie une conversation DIRECT avec userId."
+                    }
+                },
+                {
+                    "name": "Create/Find Task Conversation",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseUrl}}/chat/task/123",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["chat", "task", "123"]
+                        },
+                        "description": "Crée ou renvoie une conversation liée à la tâche 123."
+                    }
+                },
+                {
+                    "name": "List Messages (paginated)",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/chat/conversations/conv_1/messages?limit=20",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["chat", "conversations", "conv_1", "messages"],
+                            "query": [
+                                { "key": "limit", "value": "20" },
+                                { "key": "cursor", "value": "", "disabled": true }
+                            ]
+                        },
+                        "description": "Récupère les messages avec pagination. Utilisez cursor=<messageId> pour plus ancien."
+                    }
+                },
+                {
+                    "name": "Send Message",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"content\": \"Hello team!\",\n  \"replyToId\": null\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/chat/conversations/conv_1/messages",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["chat", "conversations", "conv_1", "messages"]
+                        },
+                        "description": "Envoie un message; marque l'expéditeur comme ayant lu."
+                    }
+                },
+                {
+                    "name": "Mark Conversation Read",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseUrl}}/chat/conversations/conv_1/read",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["chat", "conversations", "conv_1", "read"]
+                        },
+                        "description": "Marque tous les messages comme lus pour l'utilisateur courant."
+                    }
+                },
+                {
+                    "name": "Mark Conversation Unread",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseUrl}}/chat/conversations/conv_1/unread",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["chat", "conversations", "conv_1", "unread"]
+                        },
+                        "description": "Efface lastReadAt pour l'utilisateur courant."
+                    }
+                },
+                {
+                    "name": "Edit Message",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"content\": \"Updated content\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/chat/messages/msg_1",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["chat", "messages", "msg_1"]
+                        },
+                        "description": "Édite un message de l'utilisateur; positionne isEdited."
+                    }
+                },
+                {
+                    "name": "Delete Message (soft)",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/chat/messages/msg_1",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["chat", "messages", "msg_1"]
+                        },
+                        "description": "Supprime (soft) un message de l'utilisateur."
+                    }
+                },
+                {
+                    "name": "WebSocket Usage (info)",
+                    "request": {
+                        "auth": { "type": "noauth" },
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/chat/conversations",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["chat", "conversations"]
+                        },
+                        "description": "Socket.io namespace /chat. Exemple:\\nconst socket = io(\\\"http://localhost:3000/chat\\\", { extraHeaders: { Authorization: \\\"Bearer {{token}}\\\" } });\\nsocket.emit(\\\"join\\\", \\\"conv_1\\\");\\nsocket.emit(\\\"message:send\\\", { conversationId: \\\"conv_1\\\", content: \\\"Hello!\\\" });\\nsocket.emit(\\\"typing:start\\\", \\\"conv_1\\\");\\nsocket.emit(\\\"message:read\\\", \\\"conv_1\\\");"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🔔 Notifications",
+            "item": [
+                {
+                    "name": "List Notifications",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/notifications?limit=20",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notifications"],
+                            "query": [
+                                { "key": "limit", "value": "20" },
+                                { "key": "cursor", "value": "", "disabled": true }
+                            ]
+                        },
+                        "description": "Liste paginée des notifications (desc par createdAt)."
+                    }
+                },
+                {
+                    "name": "Unread Count",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/notifications/unread-count",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notifications", "unread-count"]
+                        },
+                        "description": "Nombre de notifications non lues."
+                    }
+                },
+                {
+                    "name": "Mark One Read",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseUrl}}/notifications/notif_1/read",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notifications", "notif_1", "read"]
+                        },
+                        "description": "Marque une notification comme lue."
+                    }
+                },
+                {
+                    "name": "Mark All Read",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseUrl}}/notifications/mark-all-read",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notifications", "mark-all-read"]
+                        },
+                        "description": "Marque toutes les notifications comme lues."
+                    }
+                },
+                {
+                    "name": "Delete Notification",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseUrl}}/notifications/notif_1",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notifications", "notif_1"]
+                        },
+                        "description": "Supprime une notification."
+                    }
+                },
+                {
+                    "name": "Get Preferences",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/notifications/preferences",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notifications", "preferences"]
+                        },
+                        "description": "Récupère les préférences de notification de l'utilisateur."
+                    }
+                },
+                {
+                    "name": "Update Preferences",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"inAppNewMessage\": true,\n  \"pushEnabled\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/notifications/preferences",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notifications", "preferences"]
+                        },
+                        "description": "Met à jour les préférences de notifications."
+                    }
+                },
+                {
+                    "name": "WebSocket Info",
+                    "request": {
+                        "auth": { "type": "noauth" },
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/notifications",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["notifications"]
+                        },
+                        "description": "Socket.io namespace /notifications. Le client doit envoyer le JWT.\nExemple:\nconst socket = io(\"http://localhost:3000/notifications\", { extraHeaders: { Authorization: \"Bearer {{token}}\" } });\nsocket.on(\"notification:new\", (n) => console.log(n));\nsocket.on(\"notification:unread_count\", (p) => console.log(p));"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "⏱️ Time Tracking",
+            "item": [
+                {
+                    "name": "Get Active Timer",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/time/active", "host": ["{{baseUrl}}"], "path": ["time", "active"] },
+                        "description": "Récupère le timer actif pour l'utilisateur courant."
+                    }
+                },
+                {
+                    "name": "Start Timer",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"taskId\": 1,\n  \"description\": \"Travail en cours\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/time/start", "host": ["{{baseUrl}}"], "path": ["time", "start"] },
+                        "description": "Démarre un timer sur la tâche."
+                    }
+                },
+                {
+                    "name": "Pause Timer",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/time/pause", "host": ["{{baseUrl}}"], "path": ["time", "pause"] }
+                    }
+                },
+                {
+                    "name": "Resume Timer",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/time/resume", "host": ["{{baseUrl}}"], "path": ["time", "resume"] }
+                    }
+                },
+                {
+                    "name": "Stop Timer",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/time/stop", "host": ["{{baseUrl}}"], "path": ["time", "stop"] },
+                        "description": "Arrête le timer et crée un TimeEntry."
+                    }
+                },
+                {
+                    "name": "Add Manual Entry",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"taskId\": 1,\n  \"description\": \"Réunion\",\n  \"startTime\": \"2026-02-24T09:00:00.000Z\",\n  \"endTime\": \"2026-02-24T10:00:00.000Z\",\n  \"billable\": true\n}" },
+                        "url": { "raw": "{{baseUrl}}/time/manual", "host": ["{{baseUrl}}"], "path": ["time", "manual"] }
+                    }
+                },
+                {
+                    "name": "List Entries",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/time/entries?from=2026-02-01&to=2026-02-28", "host": ["{{baseUrl}}"], "path": ["time", "entries"], "query": [{ "key": "from", "value": "2026-02-01" }, { "key": "to", "value": "2026-02-28" }] }
+                    }
+                },
+                {
+                    "name": "Update Entry",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"description\": \"Correction de bugs\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/time/entries/entry_1", "host": ["{{baseUrl}}"], "path": ["time", "entries", "entry_1"] }
+                    }
+                },
+                {
+                    "name": "Delete Entry",
+                    "request": {
+                        "method": "DELETE",
+                        "url": { "raw": "{{baseUrl}}/time/entries/entry_1", "host": ["{{baseUrl}}"], "path": ["time", "entries", "entry_1"] }
+                    }
+                },
+                {
+                    "name": "Report Summary",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/time/reports/summary?from=2026-02-01&to=2026-02-28", "host": ["{{baseUrl}}"], "path": ["time", "reports", "summary"], "query": [{ "key": "from", "value": "2026-02-01" }, { "key": "to", "value": "2026-02-28" }] }
+                    }
+                },
+                {
+                    "name": "WebSocket Info",
+                    "request": {
+                        "auth": { "type": "noauth" },
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/time/active", "host": ["{{baseUrl}}"], "path": ["time", "active"] },
+                        "description": "Namespace /time. Exemple client:\nconst socket = io(\"http://localhost:3000/time\", { extraHeaders: { Authorization: \"Bearer {{token}}\" } });\nsocket.on(\"timer:state\", (t) => console.log(t));"
                     }
                 }
             ]

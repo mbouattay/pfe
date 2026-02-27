@@ -2,23 +2,23 @@ import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 export interface WelcomeMailOptions {
-    to: string;
-    email: string;
-    password: string;
-    name: string;
-    role: 'Client' | 'Employé';
+  to: string;
+  email: string;
+  password: string;
+  name: string;
+  role: 'Client' | 'Employé';
 }
 
 @Injectable()
 export class MailService {
-    private readonly logger = new Logger(MailService.name);
+  private readonly logger = new Logger(MailService.name);
 
-    constructor(private readonly mailerService: MailerService) { }
+  constructor(private readonly mailerService: MailerService) {}
 
-    async sendWelcomeEmail(options: WelcomeMailOptions): Promise<void> {
-        const { to, email, password, name, role } = options;
+  async sendWelcomeEmail(options: WelcomeMailOptions): Promise<void> {
+    const { to, email, password, name, role } = options;
 
-        const html = `
+    const html = `
       <!DOCTYPE html>
       <html lang="fr">
       <head>
@@ -67,16 +67,22 @@ export class MailService {
       </html>
     `;
 
-        try {
-            await this.mailerService.sendMail({
-                to,
-                subject: `🎉 Bienvenue sur Duality Agency — Vos identifiants`,
-                html,
-            });
-            this.logger.log(`Email de bienvenue envoyé à ${to}`);
-        } catch (error) {
-            this.logger.error(`Échec envoi email à ${to}: ${error.message}`);
-            // On ne bloque pas la création du compte si l'email échoue
-        }
+    try {
+      await this.mailerService.sendMail({
+        to,
+        subject: `🎉 Bienvenue sur Duality Agency — Vos identifiants`,
+        html,
+      });
+      this.logger.log(`Email de bienvenue envoyé à ${to}`);
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : typeof error === 'string'
+            ? error
+            : JSON.stringify(error);
+      this.logger.error(`Échec envoi email à ${to}: ${message}`);
+      // On ne bloque pas la création du compte si l'email échoue
     }
+  }
 }

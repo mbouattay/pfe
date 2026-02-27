@@ -17,6 +17,9 @@ import { SprintTaskModule } from './modules/sprintTask/sprintTask.module';
 import { AiModule } from './modules/ai/ai.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { MailModule } from './common/mail/mail.module';
+import { ChatModule } from './modules/chat/chat.module';
+import { NotificationModule } from './modules/notifications/notification.module';
+import { TimeModule } from './modules/time/time.module';
 
 @Module({
   imports: [
@@ -30,10 +33,6 @@ import { MailModule } from './common/mail/mail.module';
     AdministrateurModule,
     WebProjectModule,
     MarketingProjectModule,
-    TaskModule,
-    SprintModule,
-    SprintTaskModule,
-    AiModule,
   ],
   controllers: [AppController],
   providers: [
@@ -44,4 +43,4 @@ import { MailModule } from './common/mail/mail.module';
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

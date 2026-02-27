@@ -7,4 +7,4 @@ import { EmployerService } from './employeur.service';
   providers: [EmployerService],
   exports: [EmployerService],
 })
-export class EmployerModule { }
+export class EmployerModule {}

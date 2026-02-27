@@ -61,7 +61,8 @@ export class WebProjectService {
     } = {};
 
     if (dto.titre !== undefined) projectData.titre = dto.titre;
-    if (dto.description !== undefined) projectData.description = dto.description;
+    if (dto.description !== undefined)
+      projectData.description = dto.description;
     if (dto.dateDebut !== undefined) {
       projectData.dateDebut = new Date(dto.dateDebut);
     }
