@@ -14,7 +14,6 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { AiService } from './ai.service';
-import { Public } from 'src/common/decorators/public.decorator';
 
 const PDF_MIME = 'application/pdf';
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -24,7 +23,6 @@ export class AiController {
   constructor(private readonly aiService: AiService) {}
 
   @Post('generate-sprints')
-  @Public()
   @UseInterceptors(FileInterceptor('file'))
   async generateSprints(
     @UploadedFile(

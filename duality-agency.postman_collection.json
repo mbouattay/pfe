@@ -14,6 +14,244 @@
             "key": "token",
             "value": "",
             "type": "string"
+        },
+        {
+            "name": "📅 Calendar",
+            "item": [
+                {
+                    "name": "Events (range)",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/calendar/events?startDate=2026-03-01&endDate=2026-03-31&type=all",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["calendar", "events"],
+                            "query": [
+                                { "key": "startDate", "value": "2026-03-01" },
+                                { "key": "endDate", "value": "2026-03-31" },
+                                { "key": "type", "value": "all" },
+                                { "key": "projectId", "value": "", "disabled": true },
+                                { "key": "assigneeId", "value": "", "disabled": true },
+                                { "key": "status", "value": "", "disabled": true },
+                                { "key": "priority", "value": "", "disabled": true }
+                            ]
+                        },
+                        "description": "Liste des événements calendrier pour une période."
+                    }
+                },
+                {
+                    "name": "Upcoming",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/calendar/upcoming?days=7&includeOverdue=true",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["calendar", "upcoming"],
+                            "query": [
+                                { "key": "days", "value": "7" },
+                                { "key": "includeOverdue", "value": "true" }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Day",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/calendar/day/2026-03-10", "host": ["{{baseUrl}}"], "path": ["calendar", "day", "2026-03-10"] }
+                    }
+                },
+                {
+                    "name": "Export ICS",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/calendar/export/ics?fromDate=2026-03-01&toDate=2026-03-31",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["calendar", "export", "ics"],
+                            "query": [
+                                { "key": "fromDate", "value": "2026-03-01" },
+                                { "key": "toDate", "value": "2026-03-31" }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Filters",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/calendar/filters", "host": ["{{baseUrl}}"], "path": ["calendar", "filters"] }
+                    }
+                },
+                {
+                    "name": "Reschedule Task",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"newDate\": \"2026-03-20T00:00:00.000Z\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/calendar/tasks/1/reschedule", "host": ["{{baseUrl}}"], "path": ["calendar", "tasks", "1", "reschedule"] }
+                    }
+                },
+                {
+                    "name": "Reschedule Sprint Task",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"newDate\": \"2026-03-15T00:00:00.000Z\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/calendar/sprint-tasks/1/reschedule", "host": ["{{baseUrl}}"], "path": ["calendar", "sprint-tasks", "1", "reschedule"] }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📊 Analytics",
+            "item": [
+                {
+                    "name": "Dashboard Summary",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/analytics/dashboard/summary?period=month",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["analytics", "dashboard", "summary"],
+                            "query": [
+                                { "key": "period", "value": "month" },
+                                { "key": "fromDate", "value": "", "disabled": true },
+                                { "key": "toDate", "value": "", "disabled": true }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "👥 Sprint Participants",
+            "item": [
+                {
+                    "name": "Add Participant",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"role\": \"MEMBER\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/sprints/1/participants/2", "host": ["{{baseUrl}}"], "path": ["sprints", "1", "participants", "2"] }
+                    }
+                },
+                {
+                    "name": "Remove Participant",
+                    "request": {
+                        "method": "DELETE",
+                        "url": { "raw": "{{baseUrl}}/sprints/1/participants/2", "host": ["{{baseUrl}}"], "path": ["sprints", "1", "participants", "2"] }
+                    }
+                },
+                {
+                    "name": "List Participants",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/sprints/1/participants", "host": ["{{baseUrl}}"], "path": ["sprints", "1", "participants"] }
+                    }
+                },
+                {
+                    "name": "List Sprints for User",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/sprints/participants/user/2", "host": ["{{baseUrl}}"], "path": ["sprints", "participants", "user", "2"] }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🗂 Files",
+            "description": "Accès restreint — Token requis. Droits: propriétaire, assigné, watchers (task), participants de sprint (sprint-task), participants de conversation (message), ou ADMIN.",
+            "item": [
+                {
+                    "name": "Upload Task Files",
+                    "request": {
+                        "method": "POST",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                { "key": "files", "type": "file", "src": [] }
+                            ]
+                        },
+                        "url": { "raw": "{{baseUrl}}/files/upload/task/1", "host": ["{{baseUrl}}"], "path": ["files", "upload", "task", "1"] }
+                    }
+                },
+                {
+                    "name": "List Task Files",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/files/task/1", "host": ["{{baseUrl}}"], "path": ["files", "task", "1"] }
+                    }
+                },
+                {
+                    "name": "Upload Sprint Task Files",
+                    "request": {
+                        "method": "POST",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                { "key": "files", "type": "file", "src": [] }
+                            ]
+                        },
+                        "url": { "raw": "{{baseUrl}}/files/upload/sprint-task/1", "host": ["{{baseUrl}}"], "path": ["files", "upload", "sprint-task", "1"] }
+                    }
+                },
+                {
+                    "name": "List Sprint Task Files",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/files/sprint-task/1", "host": ["{{baseUrl}}"], "path": ["files", "sprint-task", "1"] }
+                    }
+                },
+                {
+                    "name": "Upload Message Files",
+                    "request": {
+                        "method": "POST",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                { "key": "files", "type": "file", "src": [] }
+                            ]
+                        },
+                        "url": { "raw": "{{baseUrl}}/files/upload/message/msg_1", "host": ["{{baseUrl}}"], "path": ["files", "upload", "message", "msg_1"] }
+                    }
+                },
+                {
+                    "name": "List Conversation Files",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/files/conversation/conv_1", "host": ["{{baseUrl}}"], "path": ["files", "conversation", "conv_1"] }
+                    }
+                },
+                {
+                    "name": "Get File",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/files/file_1", "host": ["{{baseUrl}}"], "path": ["files", "file_1"] }
+                    }
+                },
+                {
+                    "name": "Download File",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/files/file_1/download", "host": ["{{baseUrl}}"], "path": ["files", "file_1", "download"] }
+                    }
+                },
+                {
+                    "name": "Preview File",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/files/file_1/preview", "host": ["{{baseUrl}}"], "path": ["files", "file_1", "preview"] }
+                    }
+                },
+                {
+                    "name": "Delete File",
+                    "request": {
+                        "method": "DELETE",
+                        "url": { "raw": "{{baseUrl}}/files/file_1", "host": ["{{baseUrl}}"], "path": ["files", "file_1"] }
+                    }
+                }
+            ]
         }
     ],
     "auth": {
@@ -454,7 +692,7 @@
                                 "clients"
                             ]
                         },
-                        "description": "� Route PUBLIQUE — Pas de token requis\n\nCrée un nouveau client. Les champs `telephone` et `avatar` sont optionnels."
+                        "description": "🔐 Route protégée — Token requis\n\nCrée un nouveau client. Les champs `telephone` et `avatar` sont optionnels."
                     }
                 },
                 {
@@ -473,7 +711,7 @@
                                 "clients"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE (@Public) — Pas de token requis\n\nRetourne la liste de tous les clients."
+                        "description": "🔐 Route protégée — Token requis\n\nRetourne la liste de tous les clients."
                     }
                 },
                 {
@@ -490,7 +728,7 @@
                                 "1"
                             ]
                         },
-                        "description": "� Route PUBLIQUE — Pas de token requis\n\nRetourne les détails d'un client. Remplace `1` par l'ID souhaité."
+                        "description": "🔐 Route protégée — Token requis\n\nRetourne les détails d'un client. Remplace `1` par l'ID souhaité."
                     }
                 },
                 {
@@ -517,7 +755,7 @@
                                 "1"
                             ]
                         },
-                        "description": "� Route PUBLIQUE — Pas de token requis\n\nMet à jour un client. Tous les champs sont optionnels (PATCH partiel)."
+                        "description": "🔐 Route protégée — Token requis\n\nMet à jour un client. Tous les champs sont optionnels (PATCH partiel)."
                     }
                 },
                 {
@@ -534,7 +772,7 @@
                                 "1"
                             ]
                         },
-                        "description": "� Route PUBLIQUE — Pas de token requis\n\nSupprime un client par son ID."
+                        "description": "🔐 Route protégée — Token requis\n\nSupprime un client par son ID."
                     }
                 }
             ]
@@ -565,7 +803,7 @@
                                 "employers"
                             ]
                         },
-                        "description": "� Route PUBLIQUE — Pas de token requis\n\nCrée un nouvel employé. Le `gradeId` doit correspondre à un grade existant. `telephone` et `avatar` sont optionnels."
+                        "description": "🔐 Route protégée — Token requis\n\nCrée un nouvel employé. Le `gradeId` doit correspondre à un grade existant. `telephone` et `avatar` sont optionnels."
                     }
                 },
                 {
@@ -581,7 +819,7 @@
                                 "employers"
                             ]
                         },
-                        "description": "� Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 },
                 {
@@ -598,7 +836,7 @@
                                 "1"
                             ]
                         },
-                        "description": "� Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 },
                 {
@@ -625,7 +863,7 @@
                                 "1"
                             ]
                         },
-                        "description": "� Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 },
                 {
@@ -642,7 +880,7 @@
                                 "1"
                             ]
                         },
-                        "description": "� Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 }
             ]
@@ -673,7 +911,7 @@
                                 "grades"
                             ]
                         },
-                        "description": "� Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 },
                 {
@@ -689,7 +927,7 @@
                                 "grades"
                             ]
                         },
-                        "description": "� Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 },
                 {
@@ -706,7 +944,7 @@
                                 "1"
                             ]
                         },
-                        "description": "� Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 },
                 {
@@ -733,7 +971,7 @@
                                 "1"
                             ]
                         },
-                        "description": "� Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 },
                 {
@@ -781,7 +1019,7 @@
                                 "administrateurs"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE — Pas de token requis\n\n`telephone` et `avatar` sont optionnels."
+                        "description": "🔐 Route protégée — Token requis\n\n`telephone` et `avatar` sont optionnels."
                     }
                 }
             ]
@@ -812,7 +1050,7 @@
                                 "web-projects"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Requiert ADMIN — Token requis"
                     }
                 },
                 {
@@ -828,7 +1066,7 @@
                                 "web-projects"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 },
                 {
@@ -855,7 +1093,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Requiert ADMIN — Token requis"
                     }
                 },
                 {
@@ -872,7 +1110,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Requiert ADMIN — Token requis"
                     }
                 }
             ]
@@ -903,7 +1141,7 @@
                                 "marketing-projects"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Requiert ADMIN — Token requis"
                     }
                 },
                 {
@@ -919,7 +1157,7 @@
                                 "marketing-projects"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 },
                 {
@@ -946,7 +1184,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Requiert ADMIN — Token requis"
                     }
                 },
                 {
@@ -963,7 +1201,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Requiert ADMIN — Token requis"
                     }
                 }
             ]
@@ -994,7 +1232,7 @@
                                 "sprints"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Requiert ADMIN — Token requis"
                     }
                 },
                 {
@@ -1010,7 +1248,7 @@
                                 "sprints"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 },
                 {
@@ -1027,7 +1265,7 @@
                                 "1"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 }
             ]
@@ -1058,7 +1296,7 @@
                                 "sprint-tasks"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 },
                 {
@@ -1074,7 +1312,7 @@
                                 "sprint-tasks"
                             ]
                         },
-                        "description": "🔓 Route PUBLIQUE"
+                        "description": "🔐 Route protégée — Token requis"
                     }
                 }
             ]
@@ -1106,6 +1344,238 @@
                             ]
                         },
                         "description": "🔓 Route PUBLIQUE"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📋 Tasks (Marketing) - Extended",
+            "item": [
+                {
+                    "name": "Assign Task",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/tasks/1/assign/2", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "assign", "2"] }
+                    }
+                },
+                {
+                    "name": "Unassign Task",
+                    "request": {
+                        "method": "DELETE",
+                        "url": { "raw": "{{baseUrl}}/tasks/1/assign", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "assign"] }
+                    }
+                },
+                {
+                    "name": "My Assignments",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/tasks/assigned/me", "host": ["{{baseUrl}}"], "path": ["tasks", "assigned", "me"] }
+                    }
+                },
+                {
+                    "name": "Watch Task",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/tasks/1/watch", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "watch"] }
+                    }
+                },
+                {
+                    "name": "Unwatch Task",
+                    "request": {
+                        "method": "DELETE",
+                        "url": { "raw": "{{baseUrl}}/tasks/1/unwatch", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "unwatch"] }
+                    }
+                },
+                {
+                    "name": "List Watchers",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/tasks/1/watchers", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "watchers"] }
+                    }
+                },
+                {
+                    "name": "Add Dependency",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"dependsOnId\": 2\n}" },
+                        "url": { "raw": "{{baseUrl}}/tasks/1/dependencies", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "dependencies"] }
+                    }
+                },
+                {
+                    "name": "Remove Dependency",
+                    "request": {
+                        "method": "DELETE",
+                        "url": { "raw": "{{baseUrl}}/tasks/1/dependencies/2", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "dependencies", "2"] }
+                    }
+                },
+                {
+                    "name": "List Dependencies",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/tasks/1/dependencies", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "dependencies"] }
+                    }
+                },
+                {
+                    "name": "Blocked By",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/tasks/1/blocked-by", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "blocked-by"] }
+                    }
+                },
+                {
+                    "name": "Add Comment",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"content\": \"Looks good!\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/tasks/1/comments", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "comments"] }
+                    }
+                },
+                {
+                    "name": "List Comments",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/tasks/1/comments", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "comments"] }
+                    }
+                },
+                {
+                    "name": "Update Comment",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"content\": \"Updated comment\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/tasks/comments/cmt_1", "host": ["{{baseUrl}}"], "path": ["tasks", "comments", "cmt_1"] }
+                    }
+                },
+                {
+                    "name": "Delete Comment",
+                    "request": {
+                        "method": "DELETE",
+                        "url": { "raw": "{{baseUrl}}/tasks/comments/cmt_1", "host": ["{{baseUrl}}"], "path": ["tasks", "comments", "cmt_1"] }
+                    }
+                },
+                {
+                    "name": "Available Transitions",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/tasks/1/available-transitions", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "available-transitions"] }
+                    }
+                },
+                {
+                    "name": "Apply Transition",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"to\": \"EN_COURS\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/tasks/1/transition", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "transition"] }
+                    }
+                },
+                {
+                    "name": "Task Activity",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/tasks/1/activity", "host": ["{{baseUrl}}"], "path": ["tasks", "1", "activity"] }
+                    }
+                },
+                {
+                    "name": "Bulk Assign",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"taskIds\": [1,2,3],\n  \"userId\": 2\n}" },
+                        "url": { "raw": "{{baseUrl}}/tasks/bulk/assign", "host": ["{{baseUrl}}"], "path": ["tasks", "bulk", "assign"] }
+                    }
+                },
+                {
+                    "name": "Bulk Status",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"taskIds\": [1,2,3],\n  \"status\": \"EN_COURS\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/tasks/bulk/status", "host": ["{{baseUrl}}"], "path": ["tasks", "bulk", "status"] }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "💬 Chat (Extended)",
+            "item": [
+                {
+                    "name": "List Conversations",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/chat/conversations", "host": ["{{baseUrl}}"], "path": ["chat", "conversations"] }
+                    }
+                },
+                {
+                    "name": "Get/Create Direct",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"userId\": 2\n}" },
+                        "url": { "raw": "{{baseUrl}}/chat/direct", "host": ["{{baseUrl}}"], "path": ["chat", "direct"] }
+                    }
+                },
+                {
+                    "name": "Create/Find Task Conversation",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/chat/task/1", "host": ["{{baseUrl}}"], "path": ["chat", "task", "1"] }
+                    }
+                },
+                {
+                    "name": "List Messages",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/chat/conversations/conv_1/messages?limit=20",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["chat", "conversations", "conv_1", "messages"],
+                            "query": [
+                                { "key": "limit", "value": "20" },
+                                { "key": "cursor", "value": "", "disabled": true }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Send Message",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"content\": \"Hello team!\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/chat/conversations/conv_1/messages", "host": ["{{baseUrl}}"], "path": ["chat", "conversations", "conv_1", "messages"] }
+                    }
+                },
+                {
+                    "name": "Mark Read",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/chat/conversations/conv_1/read", "host": ["{{baseUrl}}"], "path": ["chat", "conversations", "conv_1", "read"] }
+                    }
+                },
+                {
+                    "name": "Mark Unread",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/chat/conversations/conv_1/unread", "host": ["{{baseUrl}}"], "path": ["chat", "conversations", "conv_1", "unread"] }
+                    }
+                },
+                {
+                    "name": "Edit Message",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"content\": \"Edited content\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/chat/messages/msg_1", "host": ["{{baseUrl}}"], "path": ["chat", "messages", "msg_1"] }
+                    }
+                },
+                {
+                    "name": "Delete Message",
+                    "request": {
+                        "method": "DELETE",
+                        "url": { "raw": "{{baseUrl}}/chat/messages/msg_1", "host": ["{{baseUrl}}"], "path": ["chat", "messages", "msg_1"] }
                     }
                 }
             ]
@@ -1146,6 +1616,102 @@
                             ]
                         },
                         "description": "🔐 Route protégée — Token requis (Bearer {{token}})\n\nEnvoie un PDF « cahier des charges » en multipart/form-data. Le backend :\n1. Extrait le texte du PDF\n2. Envoie le texte à Grok (xAI)\n3. Génère des sprints et tâches Scrum (14 j, max 40 SP, Fibonacci)\n4. Enregistre les sprints et SprintTasks en base pour le WebProject du projet donné.\n\n**Body :**\n- `file` (file) : PDF uniquement, max 10 Mo\n- `projectId` (number) : ID du Project dont le WebProject recevra les sprints\n\n**Réponse :** `{ \"created\": number, \"sprintIds\": number[] }`"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "⏱️ Time",
+            "description": "Suivi du temps — Token requis. L'utilisateur gère son propre temps; ADMIN peut filtrer via userId/marketingProjectId.",
+            "item": [
+                {
+                    "name": "Get Active Timer",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/time/active", "host": ["{{baseUrl}}"], "path": ["time", "active"] }
+                    }
+                },
+                {
+                    "name": "Start Timer",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"taskId\": 1\n}" },
+                        "url": { "raw": "{{baseUrl}}/time/start", "host": ["{{baseUrl}}"], "path": ["time", "start"] },
+                        "description": "Démarre un timer pour une tâche assignée (taskId requis). S'il existe un timer actif, il est stoppé automatiquement."
+                    }
+                },
+                {
+                    "name": "Pause Timer",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/time/pause", "host": ["{{baseUrl}}"], "path": ["time", "pause"] }
+                    }
+                },
+                {
+                    "name": "Resume Timer",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/time/resume", "host": ["{{baseUrl}}"], "path": ["time", "resume"] }
+                    }
+                },
+                {
+                    "name": "Stop Timer (log entry)",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/time/stop", "host": ["{{baseUrl}}"], "path": ["time", "stop"] },
+                        "description": "Arrête le timer courant et crée une TimeEntry."
+                    }
+                },
+                {
+                    "name": "Create Manual Entry",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"taskId\": 1,\n  \"description\": \"Revue\",\n  \"startTime\": \"2026-03-10T09:00:00.000Z\",\n  \"endTime\": \"2026-03-10T10:00:00.000Z\",\n  \"billable\": true,\n  \"billableRate\": 100\n}" },
+                        "url": { "raw": "{{baseUrl}}/time/manual", "host": ["{{baseUrl}}"], "path": ["time", "manual"] }
+                    }
+                },
+                {
+                    "name": "List Time Entries",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/time/entries?from=2026-03-01&to=2026-03-31",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["time", "entries"],
+                            "query": [
+                                { "key": "from", "value": "2026-03-01" },
+                                { "key": "to", "value": "2026-03-31" },
+                                { "key": "userId", "value": "", "disabled": true },
+                                { "key": "taskId", "value": "", "disabled": true },
+                                { "key": "marketingProjectId", "value": "", "disabled": true }
+                            ]
+                        },
+                        "description": "ADMIN peut filtrer par userId/marketingProjectId; sinon, l'utilisateur voit ses entrées."
+                    }
+                },
+                {
+                    "name": "Update Time Entry",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"description\": \"Correction\",\n  \"startTime\": \"2026-03-10T09:15:00.000Z\",\n  \"endTime\": \"2026-03-10T10:05:00.000Z\",\n  \"billable\": true,\n  \"billableRate\": 120\n}" },
+                        "url": { "raw": "{{baseUrl}}/time/entries/te_1", "host": ["{{baseUrl}}"], "path": ["time", "entries", "te_1"] }
+                    }
+                },
+                {
+                    "name": "Delete Time Entry",
+                    "request": {
+                        "method": "DELETE",
+                        "url": { "raw": "{{baseUrl}}/time/entries/te_1", "host": ["{{baseUrl}}"], "path": ["time", "entries", "te_1"] }
+                    }
+                },
+                {
+                    "name": "Report Summary",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/time/reports/summary?from=2026-03-01&to=2026-03-31", "host": ["{{baseUrl}}"], "path": ["time", "reports", "summary"], "query": [{ "key": "from", "value": "2026-03-01" }, { "key": "to", "value": "2026-03-31" }] }
                     }
                 }
             ]

@@ -265,6 +265,7 @@ async function main() {
       dateDebut: new Date(),
       dateFin: new Date(Date.now() + 7 * 24 * 3600 * 1000),
       status: 'EN_COURS',
+      reporter: { connect: { id: employerUser3.id } },
       marketingProject: { connect: { id: mkt.id } },
     },
   });
@@ -275,6 +276,7 @@ async function main() {
       dateDebut: new Date(),
       dateFin: new Date(Date.now() + 10 * 24 * 3600 * 1000),
       status: 'A_FAIRE',
+      reporter: { connect: { id: employerUser3.id } },
       marketingProject: { connect: { id: mkt.id } },
     },
   });
@@ -373,6 +375,125 @@ async function main() {
   await prisma.conversationParticipant.update({
     where: { conversationId_userId: { conversationId: taskConv.id, userId: employerUser3.id } },
     data: { lastReadAt: new Date() },
+  });
+
+  const sprint1Conversation = await prisma.conversation.create({
+    data: {
+      type: 'SPRINT',
+      createdBy: employerUser3.id,
+      participants: {
+        create: [
+          { userId: employerUser1.id, joinedAt: new Date() },
+          { userId: employerUser2.id, joinedAt: new Date() },
+          { userId: employerUser3.id, joinedAt: new Date() },
+          { userId: adminUser.id, joinedAt: new Date() },
+        ],
+      },
+    },
+  });
+  await prisma.sprint.update({
+    where: { id: sprint1.id },
+    data: { conversationId: sprint1Conversation.id },
+  });
+  await prisma.sprintParticipant.createMany({
+    data: [
+      { sprintId: sprint1.id, userId: employerUser1.id, role: 'MEMBER' },
+      { sprintId: sprint1.id, userId: employerUser2.id, role: 'MEMBER' },
+      { sprintId: sprint1.id, userId: employerUser3.id, role: 'LEAD' },
+      { sprintId: sprint1.id, userId: adminUser.id, role: 'ADMIN' },
+    ],
+    skipDuplicates: true,
+  });
+
+  const sprintTask1 = await prisma.sprintTask.findFirst({
+    where: { sprintId: sprint1.id },
+    orderBy: { id: 'asc' },
+  });
+
+  await prisma.taskAssignment.create({
+    data: { taskId: task1.id, userId: employerUser1.id },
+  });
+  await prisma.taskWatcher.createMany({
+    data: [
+      { taskId: task1.id, userId: employerUser2.id },
+      { taskId: task1.id, userId: employerUser3.id },
+    ],
+    skipDuplicates: true,
+  });
+  await prisma.taskDependency.create({
+    data: { taskId: task2.id, dependsOnId: task1.id },
+  });
+  const comment1 = await prisma.taskComment.create({
+    data: { taskId: task1.id, userId: employerUser2.id, content: 'Looks good to me' },
+  });
+  await prisma.taskActivity.createMany({
+    data: [
+      { taskId: task1.id, userId: employerUser3.id, action: 'CREATED', field: null, oldValue: null, newValue: null },
+      { taskId: task1.id, userId: employerUser1.id, action: 'STATUS_CHANGED', field: 'status', oldValue: 'A_FAIRE', newValue: 'EN_COURS' },
+      { taskId: task1.id, userId: employerUser2.id, action: 'COMMENT_ADDED', field: null, oldValue: null, newValue: comment1.id },
+    ],
+    skipDuplicates: true,
+  });
+
+  const now = new Date();
+  const earlier = new Date(now.getTime() - 2 * 3600 * 1000);
+  await prisma.timeEntry.createMany({
+    data: [
+      { userId: employerUser1.id, taskId: task1.id, description: 'Planning', startTime: earlier, endTime: now, duration: 7200, billable: true, billableRate: 80 },
+      { userId: employerUser2.id, taskId: task2.id, description: 'Mockups', startTime: new Date(now.getTime() - 3600 * 1000), endTime: now, duration: 3600, billable: false, billableRate: null },
+    ],
+  });
+  await prisma.activeTimer.upsert({
+    where: { userId: employerUser3.id },
+    create: { userId: employerUser3.id, taskId: task1.id, startTime: new Date(now.getTime() - 1800 * 1000) },
+    update: { taskId: task1.id, startTime: new Date(now.getTime() - 1800 * 1000), lastPausedAt: null, totalPaused: 0 },
+  });
+  const today = new Date(now.toISOString().slice(0, 10));
+  await prisma.timeSummary.createMany({
+    data: [
+      { userId: employerUser1.id, date: today, totalSeconds: 7200, taskBreakdown: { [task1.id]: 7200 } as any },
+      { userId: employerUser2.id, date: today, totalSeconds: 3600, taskBreakdown: { [task2.id]: 3600 } as any },
+    ],
+    skipDuplicates: true,
+  });
+
+  await prisma.notificationPreference.upsert({
+    where: { userId: employerUser1.id },
+    create: { userId: employerUser1.id, inAppNewMessage: true, inAppTaskAssigned: true, inAppDeadlineReminder: true },
+    update: {},
+  });
+  await prisma.notificationPreference.upsert({
+    where: { userId: employerUser2.id },
+    create: { userId: employerUser2.id, inAppNewMessage: true, inAppTaskAssigned: true, inAppDeadlineReminder: true },
+    update: {},
+  });
+  await prisma.notificationPreference.upsert({
+    where: { userId: employerUser3.id },
+    create: { userId: employerUser3.id, inAppNewMessage: true, inAppTaskAssigned: true, inAppDeadlineReminder: true },
+    update: {},
+  });
+  await prisma.notificationPreference.upsert({
+    where: { userId: adminUser.id },
+    create: { userId: adminUser.id, inAppNewMessage: true, inAppTaskAssigned: true, inAppDeadlineReminder: true },
+    update: {},
+  });
+
+  await prisma.notification.createMany({
+    data: [
+      { type: 'TEAM_ANNOUNCEMENT', title: 'Bienvenue', content: null, data: { hello: true } as any, userId: employerUser1.id, senderId: adminUser.id },
+      { type: 'TASK_ASSIGNED', title: 'Tâche assignée', content: null, data: { taskId: task1.id } as any, userId: employerUser1.id, senderId: employerUser3.id },
+    ],
+  });
+
+  await prisma.file.createMany({
+    data: [
+      { filename: 'spec.pdf', storageKey: 'seed/task1/spec.pdf', mimeType: 'application/pdf', size: 12345, url: null, uploaderId: employerUser3.id, taskId: task1.id },
+      ...(sprintTask1
+        ? [{ filename: 'design.png', storageKey: 'seed/sprinttask/design.png', mimeType: 'image/png', size: 23456, url: null, uploaderId: employerUser1.id, sprintTaskId: sprintTask1.id }]
+        : []),
+      { filename: 'brief.pdf', storageKey: 'seed/message/brief.pdf', mimeType: 'application/pdf', size: 34567, url: null, uploaderId: employerUser2.id, messageId: msg2.id },
+    ] as any,
+    skipDuplicates: true,
   });
 
   console.log('Seeding completed');

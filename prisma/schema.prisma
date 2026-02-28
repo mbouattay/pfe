@@ -30,8 +30,16 @@ enum TaskStatus {
   A_FAIRE
   EN_COURS
   TERMINE
+  EN_REVUE
+  BLOQUE
 }
 
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
 enum NotificationType {
   NEW_MESSAGE
   MESSAGE_MENTION
@@ -69,6 +77,13 @@ model Utilisateur {
   timeEntries            TimeEntry[]
   activeTimer            ActiveTimer?
   timeSummaries          TimeSummary[]
+  reportedTasks          Task[]                @relation("TaskReportedBy")
+  taskAssignments        TaskAssignment[]
+  taskWatchers           TaskWatcher[]
+  taskComments           TaskComment[]
+  taskActivities         TaskActivity[]
+  uploadedFiles          File[]
+  sprintParticipants     SprintParticipant[]
 
   @@map("utilisateurs")
 }
@@ -176,6 +191,9 @@ model Sprint {
   webProject   WebProject @relation(fields: [webProjectId], references: [id], onDelete: Cascade)
 
   sprintTasks SprintTask[]
+  participants SprintParticipant[]
+  conversationId String?      @unique @map("conversation_id")
+  conversation   Conversation? @relation("SprintConversation", fields: [conversationId], references: [id])
 
   @@map("sprints")
 }
@@ -194,6 +212,7 @@ model SprintTask {
 
   sprintId Int
   sprint   Sprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  files    File[]
   @@map("sprint_tasks")
 }
 
@@ -219,13 +238,24 @@ model Task {
   dateDebut DateTime
   dateFin   DateTime
   status    TaskStatus @default(A_FAIRE)
+  priority  TaskPriority @default(MEDIUM)
+  reporterId Int        @map("reporter_id")
+  reporter   Utilisateur @relation("TaskReportedBy", fields: [reporterId], references: [id])
   marketingProjectId Int
   marketingProject   MarketingProject @relation(fields: [marketingProjectId], references: [id], onDelete: Cascade)
   conversations Conversation[]
   timeEntries  TimeEntry[]
   activeTimers ActiveTimer[]
+  assignment  TaskAssignment?
+  watchers    TaskWatcher[]
+  dependencies TaskDependency[]       @relation("TaskDependencies")
+  blockedBy    TaskDependency[]       @relation("TaskBlockedBy")
+  comments     TaskComment[]
+  activities   TaskActivity[]
+  files        File[]
   @@map("tasks")
 }
+
 
 // ─────────────────────────────────────────
 // TIME TRACKING
@@ -288,6 +318,7 @@ model TimeSummary {
 enum ConversationType {
   DIRECT
   TASK
+  SPRINT
 }
 
 model Conversation {
@@ -302,6 +333,7 @@ model Conversation {
   participants  ConversationParticipant[]
   messages      Message[]
   task          Task?          @relation(fields: [taskId], references: [id])
+  sprint        Sprint?        @relation("SprintConversation")
 
   @@index([taskId])
   @@index([lastMessageAt])
@@ -339,6 +371,7 @@ model Message {
   replyTo        Message?       @relation("MessageReplies", fields: [replyToId], references: [id])
   replies        Message[]      @relation("MessageReplies")
   readBy         MessageReadStatus[]
+  files          File[]
 
   @@index([conversationId, createdAt])
   @@index([senderId])
@@ -396,4 +429,133 @@ model NotificationPreference {
   user                    Utilisateur @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notification_preferences")
+}
+
+// ─────────────────────────────────────────
+// TASK EXTENSIONS
+// ─────────────────────────────────────────
+
+model TaskAssignment {
+  id        String      @id @default(cuid())
+  taskId    Int         @unique @map("task_id")
+  userId    Int         @map("user_id")
+  assignedAt DateTime   @default(now()) @map("assigned_at")
+
+  task      Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      Utilisateur @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("task_assignments")
+}
+
+model TaskWatcher {
+  id        String      @id @default(cuid())
+  taskId    Int         @map("task_id")
+  userId    Int         @map("user_id")
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  task      Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      Utilisateur @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, userId])
+  @@index([userId])
+  @@map("task_watchers")
+}
+
+model TaskDependency {
+  id           String   @id @default(cuid())
+  taskId       Int      @map("task_id")
+  dependsOnId  Int      @map("depends_on_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  task         Task     @relation("TaskDependencies", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOn    Task     @relation("TaskBlockedBy", fields: [dependsOnId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, dependsOnId])
+  @@index([dependsOnId])
+  @@map("task_dependencies")
+}
+
+model TaskComment {
+  id        String      @id @default(cuid())
+  taskId    Int         @map("task_id")
+  userId    Int         @map("user_id")
+  content   String      @db.Text
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt      @map("updated_at")
+  deletedAt DateTime?   @map("deleted_at")
+
+  task      Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      Utilisateur @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([taskId, createdAt])
+  @@index([userId])
+  @@map("task_comments")
+}
+
+model TaskActivity {
+  id        String      @id @default(cuid())
+  taskId    Int         @map("task_id")
+  userId    Int         @map("user_id")
+  action    String
+  field     String?
+  oldValue  String?
+  newValue  String?
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  task      Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      Utilisateur @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([taskId, createdAt])
+  @@index([userId, createdAt])
+  @@map("task_activities")
+}
+
+// ─────────────────────────────────────────
+// FILES
+// ─────────────────────────────────────────
+
+model File {
+  id          String      @id @default(cuid())
+  filename    String
+  storageKey  String      @unique @map("storage_key")
+  mimeType    String      @map("mime_type")
+  size        Int
+  url         String?
+  uploaderId  Int         @map("uploader_id")
+  taskId      Int?        @map("task_id")
+  sprintTaskId Int?       @map("sprint_task_id")
+  messageId   String?     @map("message_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt      @map("updated_at")
+  deletedAt   DateTime?   @map("deleted_at")
+
+  uploader    Utilisateur @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  task        Task?       @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  sprintTask  SprintTask? @relation(fields: [sprintTaskId], references: [id], onDelete: SetNull)
+  message     Message?    @relation(fields: [messageId], references: [id], onDelete: SetNull)
+
+  @@index([taskId])
+  @@index([sprintTaskId])
+  @@index([messageId])
+  @@index([uploaderId, createdAt])
+  @@map("files")
+}
+
+// ─────────────────────────────────────────
+// SPRINT PARTICIPANTS
+// ─────────────────────────────────────────
+model SprintParticipant {
+  id        String      @id @default(cuid())
+  sprintId  Int         @map("sprint_id")
+  userId    Int         @map("user_id")
+  role      String?     @default("MEMBER")
+  joinedAt  DateTime    @default(now()) @map("joined_at")
+
+  sprint    Sprint      @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  user      Utilisateur @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sprintId, userId])
+  @@index([userId])
+  @@map("sprint_participants")
 }

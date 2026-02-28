@@ -10,36 +10,37 @@ import {
 } from '@nestjs/common';
 import { WebProjectService } from './webProject.service';
 import { CreateWebProjectDto, UpdateWebProjectDto } from './webProject.dto';
-import { Public } from 'src/common/decorators/public.decorator';
+import { ForbiddenException } from '@nestjs/common';
+import { Req } from '@nestjs/common';
 
 @Controller('web-projects')
 export class WebProjectController {
   constructor(private readonly webProjectService: WebProjectService) {}
 
   @Post()
-  @Public()
-  create(@Body() dto: CreateWebProjectDto) {
+  create(@Req() req: any, @Body() dto: CreateWebProjectDto) {
+    if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
     return this.webProjectService.create(dto);
   }
 
   @Get()
-  @Public()
   findAll() {
     return this.webProjectService.findAll();
   }
 
   @Patch(':id')
-  @Public()
   update(
     @Param('id', ParseIntPipe) id: number,
+    @Req() req: any,
     @Body() dto: UpdateWebProjectDto,
   ) {
+    if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
     return this.webProjectService.update(id, dto);
   }
 
   @Delete(':id')
-  @Public()
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
     return this.webProjectService.remove(id);
   }
 }
