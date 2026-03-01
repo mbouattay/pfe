@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import type { Prisma } from '@prisma/client';
 import { TaskPriority, TaskStatus } from '@prisma/client';
 
 type TaskType = 'marketing' | 'web' | 'all';
@@ -90,14 +91,7 @@ export class CalendarService {
         params.projectId && !isNaN(Number(params.projectId))
           ? Number(params.projectId)
           : undefined;
-      const whereTask: {
-        dateDebut?: { lte?: Date };
-        dateFin?: { gte?: Date };
-        status?: TaskStatus;
-        priority?: TaskPriority | null;
-        marketingProject?: { projectId?: number };
-        assignment?: { userId?: number };
-      } = {
+      const whereTask: Prisma.TaskWhereInput = {
         dateDebut: { lte: end },
         dateFin: { gte: start },
         ...(params.status ? { status: params.status } : {}),
@@ -146,7 +140,8 @@ export class CalendarService {
           projectId: tt.marketingProject.project.id,
           projectName: tt.marketingProject.project.titre,
           description: `Comments: ${tt._count?.comments ?? 0}`,
-          overdue: tt.status !== 'TERMINE' && tt.dateFin < now,
+          overdue:
+            tt.status !== 'TERMINE' && (tt.dateFin ? tt.dateFin < now : false),
           color: colorForPriority(tt.priority),
           url: `/tasks/${tt.id}`,
         });
@@ -158,14 +153,7 @@ export class CalendarService {
         params.projectId && !isNaN(Number(params.projectId))
           ? Number(params.projectId)
           : undefined;
-      const whereSprintTask: {
-        dateDebut?: { gte?: Date; lte?: Date };
-        status?: TaskStatus;
-        sprint?: {
-          webProject?: { projectId?: number };
-          participants?: { some: { userId: number } };
-        };
-      } = {
+      const whereSprintTask: Prisma.SprintTaskWhereInput = {
         dateDebut: { gte: start, lte: end },
         ...(params.status ? { status: params.status } : {}),
         ...(pid ? { sprint: { webProject: { projectId: pid } } } : {}),
@@ -243,10 +231,9 @@ export class CalendarService {
         assignment: { include: { user: true } },
       },
     })) as unknown as TaskWithProjAssignee[];
-    const sprintWhere: {
-      dateDebut?: { lte?: Date };
-      sprint?: { participants?: { some: { userId: number } } };
-    } = { dateDebut: { lte: inNDays } };
+    const sprintWhere: Prisma.SprintTaskWhereInput = {
+      dateDebut: { lte: inNDays },
+    };
     if (!admin && viewerId) {
       sprintWhere.sprint = { participants: { some: { userId: viewerId } } };
     }
@@ -282,7 +269,7 @@ export class CalendarService {
       projectId: t.marketingProject.project.id,
       projectName: t.marketingProject.project.titre,
       description: null,
-      overdue: t.status !== 'TERMINE' && t.dateFin < now,
+      overdue: t.status !== 'TERMINE' && (t.dateFin ? t.dateFin < now : false),
       color: colorForPriority(t.priority),
       url: `/tasks/${t.id}`,
     });

@@ -388,20 +388,27 @@ export class AiService {
       const union = new Set([...sa, ...sb]).size || 1;
       return Math.round((inter / union) * 100);
     };
-    const results = [
+    const results: {
+      type: 'SPRINT' | 'TASK';
+      id: number;
+      title: string;
+      storyPoints: number | null;
+      sprint: string | null;
+      similarity: number;
+    }[] = [
       ...sprintTasks.map((st) => ({
-        type: 'SPRINT',
+        type: 'SPRINT' as const,
         id: st.id,
         title: st.titre,
-        storyPoints: st.storyPoints,
+        storyPoints: st.storyPoints ?? null,
         sprint: st.sprint.nom,
         similarity: score(title, st.titre),
       })),
       ...tasks.map((mk) => ({
-        type: 'TASK',
+        type: 'TASK' as const,
         id: mk.id,
         title: mk.titre,
-        storyPoints: mk.priority,
+        storyPoints: null,
         sprint: null,
         similarity: score(title, mk.titre),
       })),

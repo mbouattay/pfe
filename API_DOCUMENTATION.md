@@ -1236,7 +1236,7 @@ Form Data
 Response
 Status Code: 201 Created
 Example Body
-{ "created": 2, "sprintIds": [1,2] }
+{ "created": 2, "sprintIds": [1,2], "sprints": [ { "id": 1, "sprintTasks": [ { "id": 11, "titre": "Setup auth" } ] } ] }
 
 2) Sprint Task Assistant — Subtasks
 
@@ -1358,7 +1358,7 @@ Required — Authorization: Bearer
 Response
 Status Code: 200 OK
 Example Body
-{ "results": [ { "type": "SPRINT", "id": 12, "title": "Auth setup", "storyPoints": 3, "sprint": "Sprint 3", "similarity": 82 } ] }
+{ "results": [ { "type": "SPRINT", "id": 12, "title": "Auth setup", "storyPoints": 3, "sprint": "Sprint 3", "similarity": 82 }, { "type": "TASK", "id": 44, "title": "Marketing copy", "storyPoints": null, "sprint": null, "similarity": 67 } ] }
 
 8) Sprint Task Assistant — Q&A
 
@@ -1399,6 +1399,8 @@ Response
 Status Code: 200 OK
 Example Body
 { "shared": true, "messageId": "msg_123" }
+Notes
+- messageId can be a string or a number depending on database configuration.
 
 10) AI Accuracy Analytics
 
@@ -1437,6 +1439,7 @@ Example Body
     "averageConfidence": 82.5,
     "averageError": 1.2,
     "accuracyRate": 78,
+    "totalTimeSpentSeconds": 324000,
     "totalTimeSaved": "12 hours"
   },
   "bySprint": [

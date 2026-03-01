@@ -30,7 +30,10 @@ export class SprintController {
     },
   ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
-    return this.sprintService.create(dto, req.user?.sub ?? req.user?.id);
+    const userId = req.user?.sub ?? req.user?.id;
+    if (userId === undefined)
+      throw new ForbiddenException('User not identified');
+    return this.sprintService.create(dto, userId);
   }
 
   @Get()

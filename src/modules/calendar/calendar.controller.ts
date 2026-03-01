@@ -51,7 +51,7 @@ export class CalendarController {
   ) {
     const d = days ? Number(days) : 7;
     const inc = includeOverdue !== 'false';
-    return this.calendar.getUpcoming(d, inc, req.user?.sub);
+    return this.calendar.getUpcoming(d, inc, req?.user?.sub);
   }
 
   @Get('day/:date')

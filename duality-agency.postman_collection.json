@@ -1666,7 +1666,7 @@
                                 "generate-sprints"
                             ]
                         },
-                        "description": "🔐 Route protégée — Token requis (Bearer {{token}})\n\nEnvoie un PDF « cahier des charges » en multipart/form-data. Le backend :\n1. Extrait le texte du PDF\n2. Envoie le texte à Grok (xAI)\n3. Génère des sprints et tâches Scrum (14 j, max 40 SP, Fibonacci)\n4. Enregistre les sprints et SprintTasks en base pour le WebProject du projet donné.\n\n**Body :**\n- `file` (file) : PDF uniquement, max 10 Mo\n- `projectId` (number) : ID du Project dont le WebProject recevra les sprints\n\n**Réponse :** `{ \"created\": number, \"sprintIds\": number[] }`"
+                        "description": "🔐 Route protégée — Token requis (Bearer {{token}})\n\nEnvoie un PDF « cahier des charges » en multipart/form-data. Le backend :\n1. Extrait le texte du PDF\n2. Envoie le texte au modèle IA\n3. Génère des sprints et tâches Scrum (14 j, max 40 SP, Fibonacci)\n4. Enregistre les sprints et SprintTasks en base pour le WebProject du projet donné.\n\n**Body :**\n- `file` (file) : PDF uniquement, max 10 Mo\n- `projectId` (number) : ID du Project dont le WebProject recevra les sprints\n\n**Réponse :** `{ \"created\": number, \"sprintIds\": number[], \"sprints\": (Sprint & { sprintTasks: SprintTask[] })[] }`"
                     }
                 }
                 ,
@@ -1725,7 +1725,7 @@
                     "request": {
                         "method": "POST",
                         "url": { "raw": "{{baseUrl}}/ai/sprint-tasks/1/similar", "host": ["{{baseUrl}}"], "path": ["ai", "sprint-tasks", "1", "similar"] },
-                        "description": "Trouve des tâches similaires terminées."
+                        "description": "Trouve des tâches similaires terminées.\n\n**Réponse :** `{ \"results\": Array<{ type: 'SPRINT' | 'TASK', id: number, title: string, storyPoints: number|null, sprint: string|null, similarity: number }> }`"
                     }
                 },
                 {
@@ -1745,7 +1745,7 @@
                         "header": [{ "key": "Content-Type", "value": "application/json" }],
                         "body": { "mode": "raw", "raw": "{\n  \"type\": \"subtasks\",\n  \"content\": \"{\\\"subtasks\\\":[...]}\"\n}" },
                         "url": { "raw": "{{baseUrl}}/ai/sprint-tasks/1/share", "host": ["{{baseUrl}}"], "path": ["ai", "sprint-tasks", "1", "share"] },
-                        "description": "Partage le contenu IA dans le chat du sprint."
+                        "description": "Partage le contenu IA dans le chat du sprint.\n\n**Réponse :** `{ \"shared\": true, \"messageId\": string | number }`"
                     }
                 },
                 {

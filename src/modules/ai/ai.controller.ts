@@ -112,16 +112,9 @@ export class AiController {
   }
 
   @Post('sprint-tasks/:id/similar')
-  similar(@Param('id', ParseIntPipe) id: number): Promise<{
-    results: Array<{
-      type: 'SPRINT' | 'TASK';
-      id: number;
-      title: string;
-      storyPoints: number | null;
-      sprint: string | null;
-      similarity: number;
-    }>;
-  }> {
+  similar(
+    @Param('id', ParseIntPipe) id: number,
+  ): ReturnType<AiService['findSimilarTasks']> {
     return this.aiService.findSimilarTasks(id);
   }
 
@@ -138,7 +131,7 @@ export class AiController {
     @Req() req: unknown,
     @Param('id', ParseIntPipe) id: number,
     @Body() body: AiShareDto,
-  ): Promise<{ shared: boolean; messageId: number }> {
+  ): Promise<{ shared: boolean; messageId: string | number }> {
     const user = (req as { user?: { id?: number; sub?: number } }).user;
     const userId = user?.sub ?? user?.id;
     return this.aiService.shareToSprintChat(

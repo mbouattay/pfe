@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { SprintTaskService } from './sprintTask.service';
 import { CreateSprintTaskDto, UpdateSprintTaskDto } from './sprintTask.dto';
@@ -86,9 +87,8 @@ export class SprintTaskController {
     @Req() req: { user?: { id?: number; sub?: number } },
     @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.sprintTaskService.getAiMetadata(
-      id,
-      req.user?.sub ?? req.user?.id,
-    );
+    const uid = req.user?.sub ?? req.user?.id;
+    if (uid === undefined) throw new BadRequestException('User not identified');
+    return this.sprintTaskService.getAiMetadata(id, uid);
   }
 }
