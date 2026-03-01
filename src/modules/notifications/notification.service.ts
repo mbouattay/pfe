@@ -19,7 +19,11 @@ export class NotificationService {
     return notifications;
   }
 
-  async notifyAddedToSprintChat(userId: number, sprintId: number, conversationId: string) {
+  async notifyAddedToSprintChat(
+    userId: number,
+    sprintId: number,
+    conversationId: string,
+  ) {
     await this.prisma.notification.create({
       data: {
         type: 'TEAM_ANNOUNCEMENT',
@@ -30,10 +34,12 @@ export class NotificationService {
         senderId: userId,
       },
     });
-    this.gateway.server.to(this.gateway.userRoom(userId)).emit('notification:new', {
-      type: 'TEAM_ANNOUNCEMENT',
-      data: { sprintId, conversationId },
-    });
+    this.gateway.server
+      .to(this.gateway.userRoom(userId))
+      .emit('notification:new', {
+        type: 'TEAM_ANNOUNCEMENT',
+        data: { sprintId, conversationId },
+      });
     await this.emitUnread(userId);
   }
 
@@ -187,7 +193,11 @@ export class NotificationService {
     return { created: created.count };
   }
 
-  async notifyTaskAssigned(taskId: number, assigneeId: number, senderId: number) {
+  async notifyTaskAssigned(
+    taskId: number,
+    assigneeId: number,
+    senderId: number,
+  ) {
     await this.prisma.notification.create({
       data: {
         type: 'TASK_ASSIGNED',
@@ -234,7 +244,11 @@ export class NotificationService {
     }
   }
 
-  async notifyTaskComment(taskId: number, recipients: number[], senderId: number) {
+  async notifyTaskComment(
+    taskId: number,
+    recipients: number[],
+    senderId: number,
+  ) {
     if (recipients.length === 0) return;
     await this.prisma.notification.createMany({
       data: recipients.map((userId) => ({
@@ -257,7 +271,39 @@ export class NotificationService {
     }
   }
 
-  async notifyTaskFilesUploaded(taskId: number, recipients: number[], senderId: number, count: number) {
+  async notifySprintTaskComment(
+    sprintTaskId: number,
+    recipients: number[],
+    senderId: number,
+  ) {
+    if (recipients.length === 0) return;
+    await this.prisma.notification.createMany({
+      data: recipients.map((userId) => ({
+        type: 'TASK_COMMENT',
+        title: 'Nouveau commentaire sur une tâche de sprint',
+        content: null,
+        data: { sprintTaskId },
+        userId,
+        senderId,
+      })),
+    });
+    for (const uid of recipients) {
+      this.gateway.server
+        .to(this.gateway.userRoom(uid))
+        .emit('notification:new', {
+          type: 'TASK_COMMENT',
+          data: { sprintTaskId },
+        });
+      await this.emitUnread(uid);
+    }
+  }
+
+  async notifyTaskFilesUploaded(
+    taskId: number,
+    recipients: number[],
+    senderId: number,
+    count: number,
+  ) {
     if (recipients.length === 0) return;
     await this.prisma.notification.createMany({
       data: recipients.map((userId) => ({
@@ -280,7 +326,12 @@ export class NotificationService {
     }
   }
 
-  async notifyChatFilesShared(conversationId: string, recipients: number[], senderId: number, count: number) {
+  async notifyChatFilesShared(
+    conversationId: string,
+    recipients: number[],
+    senderId: number,
+    count: number,
+  ) {
     if (recipients.length === 0) return;
     await this.prisma.notification.createMany({
       data: recipients.map((userId) => ({

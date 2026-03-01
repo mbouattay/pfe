@@ -84,6 +84,7 @@ model Utilisateur {
   taskActivities         TaskActivity[]
   uploadedFiles          File[]
   sprintParticipants     SprintParticipant[]
+  sprintTaskComments     SprintTaskComment[]
 
   @@map("utilisateurs")
 }
@@ -209,10 +210,15 @@ model SprintTask {
   priority    Int        @default(1)
   dateDebut   DateTime
   storyPoints Int        @default(0)
+  aiEstimatedPoints Int?
+  aiConfidence      Float?
+  aiLastAnalysis    DateTime?
 
   sprintId Int
   sprint   Sprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
   files    File[]
+  comments SprintTaskComment[]
+  conversations Conversation[]
   @@map("sprint_tasks")
 }
 
@@ -325,6 +331,7 @@ model Conversation {
   id            String                    @id @default(cuid())
   type          ConversationType
   taskId        Int?
+  sprintTaskId  Int?
   createdAt     DateTime                   @default(now())
   updatedAt     DateTime                   @updatedAt
   lastMessageAt DateTime?                  @map("last_message_at")
@@ -333,9 +340,11 @@ model Conversation {
   participants  ConversationParticipant[]
   messages      Message[]
   task          Task?          @relation(fields: [taskId], references: [id])
+  sprintTask    SprintTask?    @relation(fields: [sprintTaskId], references: [id])
   sprint        Sprint?        @relation("SprintConversation")
 
   @@index([taskId])
+  @@index([sprintTaskId])
   @@index([lastMessageAt])
 }
 
@@ -493,6 +502,22 @@ model TaskComment {
   @@map("task_comments")
 }
 
+model SprintTaskComment {
+  id           String      @id @default(cuid())
+  sprintTaskId Int         @map("sprint_task_id")
+  userId       Int         @map("user_id")
+  content      String      @db.Text
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt      @map("updated_at")
+  deletedAt    DateTime?   @map("deleted_at")
+
+  sprintTask   SprintTask  @relation(fields: [sprintTaskId], references: [id], onDelete: Cascade)
+  user         Utilisateur @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sprintTaskId, createdAt])
+  @@index([userId])
+  @@map("sprint_task_comments")
+}
 model TaskActivity {
   id        String      @id @default(cuid())
   taskId    Int         @map("task_id")

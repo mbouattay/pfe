@@ -18,13 +18,16 @@ import { CreateCommentDto, UpdateCommentDto } from './dto/comment.dto';
 import { TransitionDto } from './dto/transition.dto';
 import { BulkAssignDto, BulkStatusDto } from './dto/bulk.dto';
 
+type AuthedReq = { user: { id?: number; sub?: number } };
+
 @Controller('tasks')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  create(@Req() req: any, @Body() dto: CreateTaskDto) {
-    return this.taskService.create(dto, req.user.sub);
+  create(@Req() req: AuthedReq, @Body() dto: CreateTaskDto) {
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.create(dto, uid);
   }
 
   @Get()
@@ -40,10 +43,11 @@ export class TaskController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Req() req: any,
+    @Req() req: AuthedReq,
     @Body() dto: UpdateTaskDto,
   ) {
-    return this.taskService.update(id, dto, req.user.sub);
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.update(id, dto, uid);
   }
 
   @Delete(':id')
@@ -56,30 +60,35 @@ export class TaskController {
   assign(
     @Param('id', ParseIntPipe) id: number,
     @Param('userId', ParseIntPipe) userId: number,
-    @Req() req: any,
+    @Req() req: AuthedReq,
   ) {
-    return this.taskService.assignTask(id, userId, req.user.sub);
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.assignTask(id, userId, uid);
   }
 
   @Delete(':id/assign')
-  unassign(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
-    return this.taskService.unassignTask(id, req.user.sub);
+  unassign(@Param('id', ParseIntPipe) id: number, @Req() req: AuthedReq) {
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.unassignTask(id, uid);
   }
 
   @Get('assigned/me')
-  assignedMe(@Req() req: any) {
-    return this.taskService.getAssignedToUser(req.user.sub);
+  assignedMe(@Req() req: AuthedReq) {
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.getAssignedToUser(uid);
   }
 
   // Watchers
   @Post(':id/watch')
-  watch(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
-    return this.taskService.watchTask(id, req.user.sub);
+  watch(@Param('id', ParseIntPipe) id: number, @Req() req: AuthedReq) {
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.watchTask(id, uid);
   }
 
   @Delete(':id/unwatch')
-  unwatch(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
-    return this.taskService.unwatchTask(id, req.user.sub);
+  unwatch(@Param('id', ParseIntPipe) id: number, @Req() req: AuthedReq) {
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.unwatchTask(id, uid);
   }
 
   @Get(':id/watchers')
@@ -91,19 +100,21 @@ export class TaskController {
   @Post(':id/dependencies')
   addDep(
     @Param('id', ParseIntPipe) id: number,
-    @Req() req: any,
+    @Req() req: AuthedReq,
     @Body() dto: AddDependencyDto,
   ) {
-    return this.taskService.addDependency(id, dto, req.user.sub);
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.addDependency(id, dto, uid);
   }
 
   @Delete(':id/dependencies/:depId')
   removeDep(
     @Param('id', ParseIntPipe) id: number,
     @Param('depId', ParseIntPipe) depId: number,
-    @Req() req: any,
+    @Req() req: AuthedReq,
   ) {
-    return this.taskService.removeDependency(id, depId, req.user.sub);
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.removeDependency(id, depId, uid);
   }
 
   @Get(':id/dependencies')
@@ -120,10 +131,11 @@ export class TaskController {
   @Post(':id/comments')
   addComment(
     @Param('id', ParseIntPipe) id: number,
-    @Req() req: any,
+    @Req() req: AuthedReq,
     @Body() dto: CreateCommentDto,
   ) {
-    return this.taskService.addComment(id, req.user.sub, dto);
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.addComment(id, uid, dto);
   }
 
   @Get(':id/comments')
@@ -134,14 +146,17 @@ export class TaskController {
   @Patch('comments/:id')
   updateComment(
     @Param('id') commentId: string,
-    @Req() req: any,
+    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
     @Body() dto: UpdateCommentDto,
   ) {
     return this.taskService.updateComment(commentId, req.user, dto);
   }
 
   @Delete('comments/:id')
-  deleteComment(@Param('id') commentId: string, @Req() req: any) {
+  deleteComment(
+    @Param('id') commentId: string,
+    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+  ) {
     return this.taskService.deleteComment(commentId, req.user);
   }
 
@@ -154,10 +169,11 @@ export class TaskController {
   @Post(':id/transition')
   transition(
     @Param('id', ParseIntPipe) id: number,
-    @Req() req: any,
+    @Req() req: AuthedReq,
     @Body() dto: TransitionDto,
   ) {
-    return this.taskService.transition(id, req.user.sub, dto);
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.transition(id, uid, dto);
   }
 
   // Activity
@@ -168,12 +184,14 @@ export class TaskController {
 
   // Bulk operations
   @Post('bulk/assign')
-  bulkAssign(@Req() req: any, @Body() dto: BulkAssignDto) {
-    return this.taskService.bulkAssign(dto, req.user.sub);
+  bulkAssign(@Req() req: AuthedReq, @Body() dto: BulkAssignDto) {
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.bulkAssign(dto, uid);
   }
 
   @Post('bulk/status')
-  bulkStatus(@Req() req: any, @Body() dto: BulkStatusDto) {
-    return this.taskService.bulkStatus(dto, req.user.sub);
+  bulkStatus(@Req() req: AuthedReq, @Body() dto: BulkStatusDto) {
+    const uid = req.user.id ?? req.user.sub!;
+    return this.taskService.bulkStatus(dto, uid);
   }
 }

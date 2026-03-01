@@ -7,4 +7,3 @@ export class AddDependencyDto {
   @Type(() => Number)
   dependsOnId!: number;
 }
-

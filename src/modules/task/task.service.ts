@@ -283,7 +283,7 @@ export class TaskService {
       ?.to(this.gateway.taskRoom(taskId))
       .emit('task:unwatch', { taskId, userId });
     return { watching: false };
-    }
+  }
 
   async listWatchers(taskId: number) {
     await this.findOne(taskId);

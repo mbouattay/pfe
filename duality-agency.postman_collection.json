@@ -253,6 +253,57 @@
                 }
             ]
         }
+        ,
+        {
+            "name": "🧵 Sprint Task Comments",
+            "description": "Commentaires sur les Sprint Tasks — Participants du sprint ou ADMIN uniquement.",
+            "item": [
+                {
+                    "name": "Add Comment",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"content\": \"Premier commentaire\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/sprint-tasks/1/comments", "host": ["{{baseUrl}}"], "path": ["sprint-tasks", "1", "comments"] },
+                        "description": "Ajouter un commentaire à une SprintTask."
+                    }
+                },
+                {
+                    "name": "List Comments",
+                    "request": {
+                        "method": "GET",
+                        "url": { "raw": "{{baseUrl}}/sprint-tasks/1/comments", "host": ["{{baseUrl}}"], "path": ["sprint-tasks", "1", "comments"] },
+                        "description": "Lister les commentaires d'une SprintTask."
+                    }
+                },
+                {
+                    "name": "Update Comment",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"content\": \"Mise à jour\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/sprint-tasks/comments/stc_1", "host": ["{{baseUrl}}"], "path": ["sprint-tasks", "comments", "stc_1"] },
+                        "description": "Mettre à jour un commentaire (ADMIN ou auteur)."
+                    }
+                },
+                {
+                    "name": "Delete Comment",
+                    "request": {
+                        "method": "DELETE",
+                        "url": { "raw": "{{baseUrl}}/sprint-tasks/comments/stc_1", "host": ["{{baseUrl}}"], "path": ["sprint-tasks", "comments", "stc_1"] },
+                        "description": "Supprimer un commentaire (ADMIN ou auteur)."
+                    }
+                },
+                {
+                    "name": "Create/Join Sprint Task Conversation",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/chat/sprint-task/1", "host": ["{{baseUrl}}"], "path": ["chat", "sprint-task", "1"] },
+                        "description": "Créer/Rejoindre la conversation liée à une SprintTask."
+                    }
+                }
+            ]
+        }
     ],
     "auth": {
         "type": "bearer",
@@ -1616,6 +1667,131 @@
                             ]
                         },
                         "description": "🔐 Route protégée — Token requis (Bearer {{token}})\n\nEnvoie un PDF « cahier des charges » en multipart/form-data. Le backend :\n1. Extrait le texte du PDF\n2. Envoie le texte à Grok (xAI)\n3. Génère des sprints et tâches Scrum (14 j, max 40 SP, Fibonacci)\n4. Enregistre les sprints et SprintTasks en base pour le WebProject du projet donné.\n\n**Body :**\n- `file` (file) : PDF uniquement, max 10 Mo\n- `projectId` (number) : ID du Project dont le WebProject recevra les sprints\n\n**Réponse :** `{ \"created\": number, \"sprintIds\": number[] }`"
+                    }
+                }
+                ,
+                {
+                    "name": "Sprint Task — Subtasks",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"description\": \"Décomposer la tâche en étapes spécifiques\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/ai/sprint-tasks/1/subtasks", "host": ["{{baseUrl}}"], "path": ["ai", "sprint-tasks", "1", "subtasks"] },
+                        "description": "Génère des sous-tâches avec points et justification."
+                    }
+                },
+                {
+                    "name": "Sprint Task — Implementation",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"description\": \"Besoin des étapes détaillées\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/ai/sprint-tasks/1/implementation", "host": ["{{baseUrl}}"], "path": ["ai", "sprint-tasks", "1", "implementation"] },
+                        "description": "Fournit des étapes d'implémentation avec estimation minute."
+                    }
+                },
+                {
+                    "name": "Sprint Task — Estimate",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"description\": \"Estimer les points\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/ai/sprint-tasks/1/estimate", "host": ["{{baseUrl}}"], "path": ["ai", "sprint-tasks", "1", "estimate"] },
+                        "description": "Estime les story points, confiance, min/max."
+                    }
+                },
+                {
+                    "name": "Sprint Task — Recommendations",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"description\": \"Suggestions techniques\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/ai/sprint-tasks/1/recommendations", "host": ["{{baseUrl}}"], "path": ["ai", "sprint-tasks", "1", "recommendations"] },
+                        "description": "Propose des technologies avec avantages/inconvénients."
+                    }
+                },
+                {
+                    "name": "Sprint Task — Acceptance Criteria",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"description\": \"Critères testables\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/ai/sprint-tasks/1/acceptance", "host": ["{{baseUrl}}"], "path": ["ai", "sprint-tasks", "1", "acceptance"] },
+                        "description": "Génère des critères d'acceptation testables."
+                    }
+                },
+                {
+                    "name": "Sprint Task — Similar Tasks",
+                    "request": {
+                        "method": "POST",
+                        "url": { "raw": "{{baseUrl}}/ai/sprint-tasks/1/similar", "host": ["{{baseUrl}}"], "path": ["ai", "sprint-tasks", "1", "similar"] },
+                        "description": "Trouve des tâches similaires terminées."
+                    }
+                },
+                {
+                    "name": "Sprint Task — Q&A",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"question\": \"Comment structurer le module NestJS?\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/ai/sprint-tasks/1/qa", "host": ["{{baseUrl}}"], "path": ["ai", "sprint-tasks", "1", "qa"] },
+                        "description": "Q&R interactif avec exemples de code."
+                    }
+                },
+                {
+                    "name": "Sprint Task — Share to Chat",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"type\": \"subtasks\",\n  \"content\": \"{\\\"subtasks\\\":[...]}\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/ai/sprint-tasks/1/share", "host": ["{{baseUrl}}"], "path": ["ai", "sprint-tasks", "1", "share"] },
+                        "description": "Partage le contenu IA dans le chat du sprint."
+                    }
+                },
+                {
+                    "name": "AI Accuracy Analytics",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/ai/analytics/accuracy?from=2026-03-01&to=2026-03-31&bySprint=true",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ai", "analytics", "accuracy"],
+                            "query": [
+                                { "key": "from", "value": "2026-03-01" },
+                                { "key": "to", "value": "2026-03-31" },
+                                { "key": "bySprint", "value": "true" }
+                            ]
+                        },
+                        "description": "Analyse précision IA (secondes par point)."
+                    }
+                },
+                {
+                    "name": "AI Detailed Analytics",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/ai/analytics/detailed?from=2026-01-01&to=2026-03-01&sprintId=1",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ai", "analytics", "detailed"],
+                            "query": [
+                                { "key": "from", "value": "2026-01-01" },
+                                { "key": "to", "value": "2026-03-01" },
+                                { "key": "sprintId", "value": "1" }
+                            ]
+                        },
+                        "description": "Analytics avancés combinant AI metadata et TimeEntry."
+                    }
+                },
+                {
+                    "name": "Sprint Task — AI Metadata",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/sprint-tasks/1/ai-metadata",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["sprint-tasks", "1", "ai-metadata"]
+                        },
+                        "description": "Métadonnées IA pour une SprintTask (participants ou ADMIN uniquement)."
                     }
                 }
             ]

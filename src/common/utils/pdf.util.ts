@@ -5,4 +5,3 @@ export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
   const data = await parser.getText();
   return data.text ?? '';
 }
-

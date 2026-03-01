@@ -26,7 +26,12 @@ import { TimeModule } from '../time/time.module';
     }),
   ],
   controllers: [TaskController],
-  providers: [TaskService, TaskWorkflowService, TaskActivityService, TaskGateway],
+  providers: [
+    TaskService,
+    TaskWorkflowService,
+    TaskActivityService,
+    TaskGateway,
+  ],
   exports: [TaskService],
 })
 export class TaskModule {}

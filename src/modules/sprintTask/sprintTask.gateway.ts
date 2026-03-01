@@ -14,8 +14,10 @@ interface AuthedSocket extends Socket {
   data: { userId?: number };
 }
 
-@WebSocketGateway({ namespace: '/tasks', cors: { origin: '*' } })
-export class TaskGateway implements OnGatewayConnection, OnGatewayDisconnect {
+@WebSocketGateway({ namespace: '/sprint-tasks', cors: { origin: '*' } })
+export class SprintTaskGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
@@ -38,14 +40,6 @@ export class TaskGateway implements OnGatewayConnection, OnGatewayDisconnect {
     void _client;
   }
 
-  userRoom(userId: number) {
-    return `user:${userId}`;
-  }
-
-  taskRoom(taskId: number) {
-    return `task:${taskId}`;
-  }
-
   private extractToken(client: Socket): string | undefined {
     const h = client.handshake.headers.authorization;
     if (typeof h === 'string' && h.startsWith('Bearer ')) return h.substring(7);
@@ -58,13 +52,21 @@ export class TaskGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return fromAuth ?? fromQuery;
   }
 
+  userRoom(userId: number) {
+    return `user:${userId}`;
+  }
+
+  sprintTaskRoom(sprintTaskId: number) {
+    return `sprintTask:${sprintTaskId}`;
+  }
+
   @SubscribeMessage('watch')
   handleWatch(
     @ConnectedSocket() client: AuthedSocket,
-    @MessageBody() data: { taskId: number },
+    @MessageBody() data: { sprintTaskId: number },
   ) {
     if (!client.data.userId) return;
-    const room = this.taskRoom(Number(data.taskId));
+    const room = this.sprintTaskRoom(Number(data.sprintTaskId));
     void client.join(room);
     void client.emit('watch:ok', { room });
   }
@@ -72,10 +74,10 @@ export class TaskGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('unwatch')
   handleUnwatch(
     @ConnectedSocket() client: AuthedSocket,
-    @MessageBody() data: { taskId: number },
+    @MessageBody() data: { sprintTaskId: number },
   ) {
     if (!client.data.userId) return;
-    const room = this.taskRoom(Number(data.taskId));
+    const room = this.sprintTaskRoom(Number(data.sprintTaskId));
     void client.leave(room);
     void client.emit('unwatch:ok', { room });
   }

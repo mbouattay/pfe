@@ -7,12 +7,10 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
 } from '@nestjs/common';
 import { SprintTaskService } from './sprintTask.service';
-import {
-  CreateSprintTaskDto,
-  UpdateSprintTaskDto,
-} from './sprintTask.dto';
+import { CreateSprintTaskDto, UpdateSprintTaskDto } from './sprintTask.dto';
 
 @Controller('sprint-tasks')
 export class SprintTaskController {
@@ -44,5 +42,53 @@ export class SprintTaskController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.sprintTaskService.remove(id);
+  }
+
+  // Comments
+  @Post(':id/comments')
+  addComment(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: { user: { id?: number; sub?: number } },
+    @Body() dto: import('../task/dto/comment.dto').CreateCommentDto,
+  ) {
+    const uid = req.user.id ?? req.user.sub!;
+    return this.sprintTaskService.addComment(id, uid, dto);
+  }
+
+  @Get(':id/comments')
+  listComments(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: { user: { id?: number; sub?: number } },
+  ) {
+    const uid = req.user.id ?? req.user.sub!;
+    return this.sprintTaskService.listComments(id, uid);
+  }
+
+  @Patch('comments/:id')
+  updateComment(
+    @Param('id') commentId: string,
+    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Body() dto: import('../task/dto/comment.dto').UpdateCommentDto,
+  ) {
+    return this.sprintTaskService.updateComment(commentId, req.user, dto);
+  }
+
+  @Delete('comments/:id')
+  deleteComment(
+    @Param('id') commentId: string,
+    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+  ) {
+    return this.sprintTaskService.deleteComment(commentId, req.user);
+  }
+
+  @Get(':id/ai-metadata')
+  aiMetadata(
+    @Req() req: { user?: { id?: number; sub?: number } },
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.sprintTaskService.getAiMetadata(
+      id,
+      req.user?.sub ?? req.user?.id,
+    );
   }
 }

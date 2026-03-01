@@ -18,7 +18,17 @@ export class SprintController {
   constructor(private readonly sprintService: SprintService) {}
 
   @Post()
-  create(@Body() dto: CreateSprintDto, @Req() req: any) {
+  create(
+    @Body() dto: CreateSprintDto,
+    @Req()
+    req: {
+      user: {
+        role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN';
+        id?: number;
+        sub?: number;
+      };
+    },
+  ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
     return this.sprintService.create(dto, req.user?.sub ?? req.user?.id);
   }
@@ -36,7 +46,7 @@ export class SprintController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Req() req: any,
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
     @Body() dto: UpdateSprintDto,
   ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
@@ -44,7 +54,10 @@ export class SprintController {
   }
 
   @Delete(':id')
-  remove(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+  remove(
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
     return this.sprintService.remove(id);
   }

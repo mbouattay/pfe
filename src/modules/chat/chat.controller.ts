@@ -36,6 +36,17 @@ export class ChatController {
     return this.chat.getOrCreateTaskConversation(req.user.id, Number(taskId));
   }
 
+  @Post('sprint-task/:sprintTaskId')
+  getOrCreateSprintTask(
+    @Req() req: AuthedReq,
+    @Param('sprintTaskId') sprintTaskId: string,
+  ) {
+    return this.chat.getOrCreateSprintTaskConversation(
+      req.user.id,
+      Number(sprintTaskId),
+    );
+  }
+
   @Get('conversations/:id/messages')
   listMessages(
     @Req() req: AuthedReq,

@@ -746,6 +746,18 @@ Body
 Response
 Status Code: 201 Created
 
+Model: SprintTask (persisted fields)
+- id | number | PK
+- titre | string
+- status | TaskStatus
+- priority | number (1 = highest)
+- dateDebut | ISO date
+- storyPoints | number (Fibonacci recommended)
+- aiEstimatedPoints | number? | AI-estimated story points
+- aiConfidence | number? | Confidence (0–1)
+- aiLastAnalysis | ISO date? | Timestamp of last AI analysis
+- sprintId | number | FK to Sprint
+
 2) List Sprint Tasks
 
 Endpoint
@@ -777,6 +789,138 @@ DELETE /sprint-tasks/:id
 
 Authentication
 Required — Authorization: Bearer
+
+6) Get Sprint Task AI Metadata
+
+Endpoint
+GET /sprint-tasks/:id/ai-metadata
+
+Description
+Returns AI estimation metadata with formatted values. Accessible to sprint participants or admins.
+
+Authentication
+Required — Authorization: Bearer
+
+Response
+Status Code: 200 OK
+Example Body
+{
+  "aiEstimatedPoints": 5,
+  "aiConfidence": 85,
+  "aiLastAnalysis": "2026-03-01T10:00:00.000Z",
+  "formatted": {
+    "estimatedPoints": "5 points",
+    "confidence": "85%",
+    "lastAnalysis": "March 1, 2026",
+    "analysisTimeAgo": "2 days ago"
+  },
+  "hasAiData": true
+}
+
+Error Responses
+- 400 | Validation error | { "message": ["id must be number"] }
+- 401 | Unauthorized | { "message": "Unauthorized" }
+- 403 | Forbidden | { "message": "Not a sprint participant" }
+- 404 | Not Found | { "message": "Sprint task not found" }
+
+------------------------------------------------------------------------
+
+Sprint Task Comments
+
+1) Add Comment
+
+Endpoint
+POST /sprint-tasks/:id/comments
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Body
+{ "content": "string (1–5000 chars)" }
+
+Permissions
+- Sprint participants or ADMIN only
+
+Response
+Status Code: 201 Created
+
+2) List Comments
+
+Endpoint
+GET /sprint-tasks/:id/comments
+
+Authentication
+Required — Authorization: Bearer
+
+Permissions
+- Sprint participants or ADMIN only
+
+Response
+Status Code: 200 OK
+
+3) Update Comment
+
+Endpoint
+PATCH /sprint-tasks/comments/:id
+
+Authentication
+Required — Authorization: Bearer
+
+Permissions
+- ADMIN can edit any comment; otherwise only the author
+
+Response
+Status Code: 200 OK
+
+4) Delete Comment
+
+Endpoint
+DELETE /sprint-tasks/comments/:id
+
+Authentication
+Required — Authorization: Bearer
+
+Permissions
+- ADMIN can delete any comment; otherwise only the author
+
+Response
+Status Code: 200 OK
+Body
+{ "deleted": true }
+
+WebSocket
+- Namespace: /sprint-tasks
+- Rooms: sprintTask:{id}
+- Events:
+  - sprintTask:comment { sprintTaskId, comment }
+  - sprintTask:comment:update { commentId, updated }
+  - sprintTask:comment:delete { commentId }
+
+Notifications
+- Sends TASK_COMMENT notifications to sprint participants (excluding author)
+
+------------------------------------------------------------------------
+
+Sprint Task Conversations
+
+1) Create/Join Sprint Task Conversation
+
+Endpoint
+POST /chat/sprint-task/:sprintTaskId
+
+Description
+Creates a TASK-type conversation linked to a sprint task and auto-adds sprint participants. Returns the conversation object.
+
+Authentication
+Required — Authorization: Bearer
+
+Response
+Status Code: 200 OK
+
+Notes
+- First comment on a sprint task auto-creates the conversation.
+- Existing chat endpoints (send, list messages, mark read) apply.
 
 ------------------------------------------------------------------------
 
@@ -887,6 +1031,14 @@ Projects (Web)
 - DELETE /web-projects/:id
 Authentication: Required — Authorization: Bearer; Requires ADMIN role for POST/PATCH/DELETE
 
+Permissions — Projects (Web & Marketing)
+| Operation | Required Role |
+|-----------|---------------|
+| GET       | Any authenticated user |
+| POST      | ADMIN only |
+| PATCH     | ADMIN only |
+| DELETE    | ADMIN only |
+
 Projects (Marketing)
 - POST /marketing-projects
 - GET /marketing-projects
@@ -894,6 +1046,14 @@ Projects (Marketing)
 - PATCH /marketing-projects/:id
 - DELETE /marketing-projects/:id
 Authentication: Required — Authorization: Bearer; Requires ADMIN role for POST/PATCH/DELETE
+
+Permissions — Sprints
+| Operation | Required Role |
+|-----------|---------------|
+| GET       | Any authenticated user |
+| POST      | ADMIN only |
+| PATCH     | ADMIN only |
+| DELETE    | ADMIN only |
 
 Clients
 - POST /clients
@@ -1078,6 +1238,234 @@ Status Code: 201 Created
 Example Body
 { "created": 2, "sprintIds": [1,2] }
 
+2) Sprint Task Assistant — Subtasks
+
+Endpoint
+POST /ai/sprint-tasks/:id/subtasks
+
+Description
+Generates a breakdown of subtasks with estimated story points and reasoning.
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Body
+{ "description": "optional extra context" }
+
+Response
+Status Code: 200 OK
+Example Body
+{ "subtasks": [ { "title": "Setup auth", "points": 3, "reasoning": "..." } ], "totalPoints": 5 }
+
+Errors
+- 400: { "message": ["taskId must be number"], "statusCode": 400 }
+- 401: { "message": "Unauthorized", "statusCode": 401 }
+- 403: { "message": "Not a sprint participant", "statusCode": 403 }
+- 404: { "message": "Sprint task not found", "statusCode": 404 }
+
+3) Sprint Task Assistant — Implementation Steps
+
+Endpoint
+POST /ai/sprint-tasks/:id/implementation
+
+Description
+Provides step-by-step implementation guidance with time estimates and optional code.
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Body
+{ "description": "optional extra context" }
+
+Response
+Status Code: 200 OK
+Example Body
+{ "steps": [ { "order": 1, "title": "Initialize module", "description": "...", "code": "/* ... */", "estimatedMinutes": 30 } ], "totalMinutes": 120 }
+
+4) Sprint Task Assistant — Effort Estimation
+
+Endpoint
+POST /ai/sprint-tasks/:id/estimate
+
+Description
+Estimates story points with confidence and min-max range.
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Body
+{ "description": "optional extra context" }
+
+Response
+Status Code: 200 OK
+Example Body
+{ "points": 5, "confidence": 0.75, "min": 3, "max": 8, "factors": ["..."], "similar": ["{id:1,title:'...'}"] }
+
+5) Sprint Task Assistant — Technical Recommendations
+
+Endpoint
+POST /ai/sprint-tasks/:id/recommendations
+
+Description
+Suggests technologies, libraries, and approaches with pros/cons and alternatives.
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Body
+{ "description": "optional extra context" }
+
+Response
+Status Code: 200 OK
+Example Body
+{ "recommendations": [ { "category": "backend", "suggestion": "...", "pros": ["..."], "cons": ["..."], "alternatives": ["..."] } ] }
+
+6) Sprint Task Assistant — Acceptance Criteria
+
+Endpoint
+POST /ai/sprint-tasks/:id/acceptance
+
+Description
+Generates testable acceptance criteria in priority order.
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Body
+{ "description": "optional extra context" }
+
+Response
+Status Code: 200 OK
+Example Body
+{ "criteria": [ { "title": "JWT must be validated", "details": "..." } ] }
+
+7) Sprint Task Assistant — Similar Tasks
+
+Endpoint
+POST /ai/sprint-tasks/:id/similar
+
+Description
+Finds similar completed tasks for reference.
+
+Authentication
+Required — Authorization: Bearer
+
+Response
+Status Code: 200 OK
+Example Body
+{ "results": [ { "type": "SPRINT", "id": 12, "title": "Auth setup", "storyPoints": 3, "sprint": "Sprint 3", "similarity": 82 } ] }
+
+8) Sprint Task Assistant — Q&A
+
+Endpoint
+POST /ai/sprint-tasks/:id/qa
+
+Description
+Interactive Q&A for task implementation with code examples and suggestions.
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Body
+{ "question": "How to structure NestJS module for auth?" }
+
+Response
+Status Code: 200 OK
+Example Body
+{ "answer": "...", "code": "/* ... */", "suggestions": ["..."] }
+
+9) Sprint Task Assistant — Share to Sprint Chat
+
+Endpoint
+POST /ai/sprint-tasks/:id/share
+
+Description
+Shares AI-generated content to sprint chat; notifies participants.
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Body
+{ "type": "subtasks", "content": "{...json...}" }
+
+Response
+Status Code: 200 OK
+Example Body
+{ "shared": true, "messageId": "msg_123" }
+
+10) AI Accuracy Analytics
+
+Endpoint
+GET /ai/analytics/accuracy?from?&to?&bySprint?
+
+Description
+Compares story points vs actual time; returns seconds per point per sprint task, or aggregate.
+
+Authentication
+Required — Authorization: Bearer
+
+Response
+Status Code: 200 OK
+Example Body
+{ "entries": [ { "sprintTaskId": 10, "storyPoints": 5, "seconds": 10800, "secondsPerPoint": 2160 } ] }
+
+11) AI Detailed Analytics
+
+Endpoint
+GET /ai/analytics/detailed?from&to&sprintId?
+
+Description
+Returns comprehensive analytics combining SprintTask AI metadata and TimeEntry data with aggregates.
+
+Authentication
+Required — Authorization: Bearer
+
+Response
+Status Code: 200 OK
+Example Body
+{
+  "period": { "from": "2026-01-01", "to": "2026-03-01" },
+  "overall": {
+    "totalTasksAnalyzed": 45,
+    "averageConfidence": 82.5,
+    "averageError": 1.2,
+    "accuracyRate": 78,
+    "totalTimeSaved": "12 hours"
+  },
+  "bySprint": [
+    {
+      "sprintId": 1,
+      "sprintName": "Sprint 12",
+      "tasksAnalyzed": 12,
+      "averageError": 0.8,
+      "accuracyRate": 92,
+      "improvement": "+5%"
+    }
+  ],
+  "byTaskType": [
+    { "type": "Frontend", "tasksAnalyzed": 20, "accuracyRate": 85 },
+    { "type": "Backend", "tasksAnalyzed": 15, "accuracyRate": 72 }
+  ],
+  "trend": { "direction": "improving", "percentage": "+12%", "since": "2026-02-01" },
+  "recommendations": [
+    "AI most accurate for UI tasks (92%)",
+    "Refine prompts for database tasks (65% accuracy)"
+  ]
+}
+
+Error Responses
+- 400 | Validation error | { "message": ["from must be ISO"], "statusCode": 400 }
+- 401 | Unauthorized | { "message": "Unauthorized", "statusCode": 401 }
+- 403 | Forbidden | { "message": "Forbidden", "statusCode": 403 }
+- 404 | Not Found | { "message": "Not Found", "statusCode": 404 }
+
 ------------------------------------------------------------------------
 
 WebSocket Events
@@ -1120,3 +1508,9 @@ Standard Error Responses
 - 401 | Unauthorized | { "message": "Unauthorized", "error": "Unauthorized", "statusCode": 401 }
 - 403 | Forbidden | { "message": "Admin only", "error": "Forbidden", "statusCode": 403 }
 - 404 | Not Found | { "message": "Resource not found", "error": "Not Found", "statusCode": 404 }
+
+Per-Endpoint Error Examples
+- 400: { "message": ["<field> must be valid"], "statusCode": 400 }
+- 401: { "message": "Unauthorized", "statusCode": 401 }
+- 403: { "message": "Forbidden", "statusCode": 403 }
+- 404: { "message": "Not Found", "statusCode": 404 }

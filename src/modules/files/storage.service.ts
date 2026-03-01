@@ -12,7 +12,11 @@ export interface StoredObject {
 export class StorageService {
   private baseDir = process.env.UPLOAD_DIR || join(process.cwd(), 'uploads');
 
-  async uploadBuffer(buffer: Buffer, filename: string, mime: string): Promise<StoredObject> {
+  async uploadBuffer(
+    buffer: Buffer,
+    filename: string,
+    mime: string,
+  ): Promise<StoredObject> {
     if (!existsSync(this.baseDir)) {
       mkdirSync(this.baseDir, { recursive: true });
     }
@@ -35,4 +39,3 @@ export class StorageService {
     return join(this.baseDir, key);
   }
 }
-

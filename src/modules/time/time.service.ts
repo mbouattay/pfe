@@ -30,7 +30,9 @@ export class TimeService {
           where: { taskId, userId },
         });
         if (!assigned) {
-          throw new ForbiddenException('Not allowed to track time on this task');
+          throw new ForbiddenException(
+            'Not allowed to track time on this task',
+          );
         }
       }
     }
@@ -159,7 +161,9 @@ export class TimeService {
           where: { taskId: data.taskId, userId },
         });
         if (!assigned) {
-          throw new ForbiddenException('Not allowed to track time on this task');
+          throw new ForbiddenException(
+            'Not allowed to track time on this task',
+          );
         }
       }
     }

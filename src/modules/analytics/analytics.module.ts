@@ -9,4 +9,3 @@ import { AnalyticsController } from './analytics.controller';
   controllers: [AnalyticsController],
 })
 export class AnalyticsModule {}
-

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, TaskPriority, TaskStatus } from '@prisma/client';
+import { TaskStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
 type Period = 'today' | 'week' | 'month' | 'custom';
@@ -20,7 +20,9 @@ function rangeFor(period: Period, from?: string, to?: string) {
     start = new Date(now.getFullYear(), now.getMonth(), 1);
     end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   } else {
-    start = from ? new Date(from) : new Date(now.getFullYear(), now.getMonth(), 1);
+    start = from
+      ? new Date(from)
+      : new Date(now.getFullYear(), now.getMonth(), 1);
     end = to ? new Date(to) : now;
   }
   return { start, end };
@@ -35,7 +37,11 @@ export class AnalyticsService {
     fromDate?: string;
     toDate?: string;
   }) {
-    const { start, end } = rangeFor(params.period, params.fromDate, params.toDate);
+    const { start, end } = rangeFor(
+      params.period,
+      params.fromDate,
+      params.toDate,
+    );
 
     const tasksTotal = await this.prisma.task.count({
       where: { dateDebut: { gte: start, lt: end } },
@@ -80,7 +86,9 @@ export class AnalyticsService {
       select: { taskId: true, createdAt: true },
     });
     const taskStarts = await this.prisma.task.findMany({
-      where: { id: { in: [...new Set(completedActivities.map((a) => a.taskId))] } },
+      where: {
+        id: { in: [...new Set(completedActivities.map((a) => a.taskId))] },
+      },
       select: { id: true, dateDebut: true },
     });
     const startMap = new Map(taskStarts.map((t) => [t.id, t.dateDebut]));
@@ -88,18 +96,31 @@ export class AnalyticsService {
     for (const a of completedActivities) {
       const s = startMap.get(a.taskId);
       if (s) {
-        const d = Math.max(0, Math.floor((a.createdAt.getTime() - s.getTime()) / 1000));
+        const d = Math.max(
+          0,
+          Math.floor((a.createdAt.getTime() - s.getTime()) / 1000),
+        );
         durations.push(d);
       }
     }
     const avgSeconds =
       durations.length > 0
-        ? Math.floor(durations.reduce((acc, v) => acc + v, 0) / durations.length)
+        ? Math.floor(
+            durations.reduce((acc, v) => acc + v, 0) / durations.length,
+          )
         : 0;
 
     const timeToday = await this.sumTimeRange(
-      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
-      new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1),
+      new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate(),
+      ),
+      new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate() + 1,
+      ),
     );
     const beginningOfWeek = (() => {
       const d = new Date();
@@ -112,12 +133,20 @@ export class AnalyticsService {
       new Date(),
     );
 
-    const activeMarketingProjects = await this.prisma.marketingProject.findMany({
-      where: { tasks: { some: { status: { not: TaskStatus.TERMINE } } } },
-      select: { projectId: true },
-    });
+    const activeMarketingProjects = await this.prisma.marketingProject.findMany(
+      {
+        where: { tasks: { some: { status: { not: TaskStatus.TERMINE } } } },
+        select: { projectId: true },
+      },
+    );
     const activeWebProjects = await this.prisma.webProject.findMany({
-      where: { sprints: { some: { sprintTasks: { some: { status: { not: TaskStatus.TERMINE } } } } } },
+      where: {
+        sprints: {
+          some: {
+            sprintTasks: { some: { status: { not: TaskStatus.TERMINE } } },
+          },
+        },
+      },
       select: { projectId: true },
     });
     const activeProjectIds = new Set<number>([
@@ -132,7 +161,13 @@ export class AnalyticsService {
     const recentTasks = await this.prisma.task.findMany({
       orderBy: { dateDebut: 'desc' },
       take: 5,
-      select: { id: true, titre: true, status: true, priority: true, dateDebut: true },
+      select: {
+        id: true,
+        titre: true,
+        status: true,
+        priority: true,
+        dateDebut: true,
+      },
     });
     const recentComments = await this.prisma.taskComment.findMany({
       where: { deletedAt: null },
@@ -140,11 +175,30 @@ export class AnalyticsService {
       take: 5,
       select: { id: true, taskId: true, userId: true, createdAt: true },
     });
+    const recentSprintComments = await this.prisma.sprintTaskComment.findMany({
+      where: { deletedAt: null },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        sprintTaskId: true,
+        userId: true,
+        createdAt: true,
+      },
+    });
     const recentFiles = await this.prisma.file.findMany({
       where: { deletedAt: null },
       orderBy: { createdAt: 'desc' },
       take: 5,
-      select: { id: true, filename: true, mimeType: true, size: true, createdAt: true, taskId: true, messageId: true },
+      select: {
+        id: true,
+        filename: true,
+        mimeType: true,
+        size: true,
+        createdAt: true,
+        taskId: true,
+        messageId: true,
+      },
     });
 
     const assignedCounts = await this.prisma.taskAssignment.groupBy({
@@ -161,9 +215,16 @@ export class AnalyticsService {
         completed: tasksCompleted,
         pending: tasksPending,
         overdue: { count: overdueCount, list: overdueList },
-        byStatus: byStatus.map((g) => ({ status: g.status, count: g._count._all })),
-        byPriority: byPriority.map((g) => ({ priority: g.priority as TaskPriority, count: g._count._all })),
-        completionRate: tasksTotal > 0 ? Math.round((tasksCompleted / tasksTotal) * 100) : 0,
+        byStatus: byStatus.map((g) => ({
+          status: g.status,
+          count: g._count._all,
+        })),
+        byPriority: byPriority.map((g) => ({
+          priority: g.priority,
+          count: g._count._all,
+        })),
+        completionRate:
+          tasksTotal > 0 ? Math.round((tasksCompleted / tasksTotal) * 100) : 0,
         avgCompletionSeconds: avgSeconds,
       },
       time: {
@@ -178,9 +239,13 @@ export class AnalyticsService {
       recent: {
         tasks: recentTasks,
         comments: recentComments,
+        sprintComments: recentSprintComments,
         files: recentFiles,
       },
-      assignments: assignedCounts.map((g) => ({ userId: g.userId, tasks: g._count._all })),
+      assignments: assignedCounts.map((g) => ({
+        userId: g.userId,
+        tasks: g._count._all,
+      })),
     };
   }
 
@@ -192,4 +257,3 @@ export class AnalyticsService {
     return entries.reduce((acc, e) => acc + (e.duration ?? 0), 0);
   }
 }
-

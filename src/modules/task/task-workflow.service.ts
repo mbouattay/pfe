@@ -17,8 +17,9 @@ export class TaskWorkflowService {
 
   assertTransition(from: TaskStatus, to: TaskStatus): void {
     if (!this.allowedTransitions(from).includes(to)) {
-      throw new BadRequestException(`Transition non autorisée: ${from} -> ${to}`);
+      throw new BadRequestException(
+        `Transition non autorisée: ${from} -> ${to}`,
+      );
     }
   }
 }
-

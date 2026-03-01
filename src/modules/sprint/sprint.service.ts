@@ -32,7 +32,9 @@ export class SprintService {
           createdBy: creatorId,
           participants: {
             createMany: {
-              data: Array.from(new Set<number>([creatorId, ...admins.map((a) => a.id)])).map((userId) => ({
+              data: Array.from(
+                new Set<number>([creatorId, ...admins.map((a) => a.id)]),
+              ).map((userId) => ({
                 userId,
               })),
             },

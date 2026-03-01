@@ -8,10 +8,8 @@ import {
   Query,
   Body,
   Req,
-  Res,
   ParseIntPipe,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { CalendarService } from './calendar.service';
 import { TaskPriority, TaskStatus } from '@prisma/client';
 
@@ -28,25 +26,28 @@ export class CalendarController {
     @Query('status') status?: TaskStatus,
     @Query('priority') priority?: TaskPriority,
     @Query('type') type?: 'marketing' | 'web' | 'all',
-    @Req() req?: any,
+    @Req() req?: { user?: { sub?: number } },
   ) {
     const aid = assigneeId ? Number(assigneeId) : undefined;
-    return this.calendar.getEvents({
-      startDate,
-      endDate,
-      projectId,
-      assigneeId: aid,
-      status,
-      priority,
-      type,
-    }, req.user?.sub);
+    return this.calendar.getEvents(
+      {
+        startDate,
+        endDate,
+        projectId,
+        assigneeId: aid,
+        status,
+        priority,
+        type,
+      },
+      req?.user?.sub,
+    );
   }
 
   @Get('upcoming')
   async upcoming(
     @Query('days') days?: string,
     @Query('includeOverdue') includeOverdue?: string,
-    @Req() req?: any,
+    @Req() req?: { user?: { id?: number; sub?: number } },
   ) {
     const d = days ? Number(days) : 7;
     const inc = includeOverdue !== 'false';
@@ -54,15 +55,22 @@ export class CalendarController {
   }
 
   @Get('day/:date')
-  async day(@Param('date') date: string, @Req() req: any) {
+  async day(
+    @Param('date') date: string,
+    @Req() req: { user?: { sub?: number } },
+  ) {
     return this.calendar.getDay(date, req.user?.sub);
   }
 
   @Get('export/ics')
   @Header('Content-Type', 'text/calendar; charset=utf-8')
   @Header('Content-Disposition', 'attachment; filename="calendar.ics"')
-  async exportIcs(@Query('fromDate') fromDate?: string, @Query('toDate') toDate?: string, @Req() req?: any) {
-    return this.calendar.exportIcs(fromDate, toDate, req.user?.sub);
+  async exportIcs(
+    @Query('fromDate') fromDate?: string,
+    @Query('toDate') toDate?: string,
+    @Req() req?: { user?: { sub?: number } },
+  ) {
+    return this.calendar.exportIcs(fromDate, toDate, req?.user?.sub);
   }
 
   @Get('filters')
@@ -71,13 +79,19 @@ export class CalendarController {
   }
 
   @Patch('tasks/:id/reschedule')
-  async rescheduleTask(@Param('id', ParseIntPipe) id: number, @Body() body: { newDate?: string }) {
+  async rescheduleTask(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { newDate?: string },
+  ) {
     if (!body?.newDate) throw new BadRequestException('newDate is required');
     return this.calendar.rescheduleTask(id, body.newDate);
   }
 
   @Patch('sprint-tasks/:id/reschedule')
-  async rescheduleSprintTask(@Param('id', ParseIntPipe) id: number, @Body() body: { newDate?: string }) {
+  async rescheduleSprintTask(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { newDate?: string },
+  ) {
     if (!body?.newDate) throw new BadRequestException('newDate is required');
     return this.calendar.rescheduleSprintTask(id, body.newDate);
   }

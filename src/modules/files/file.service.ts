@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { StorageService } from './storage.service';
 import { createReadStream, statSync } from 'fs';
@@ -40,7 +44,10 @@ export class FileService {
     return false;
   }
 
-  private async isConversationParticipant(userId: number, conversationId: string) {
+  private async isConversationParticipant(
+    userId: number,
+    conversationId: string,
+  ) {
     const p = await this.prisma.conversationParticipant.findFirst({
       where: { conversationId, userId },
     });
@@ -61,13 +68,21 @@ export class FileService {
     return !!participant;
   }
 
-  async uploadForTask(userId: number, taskId: number, files: Array<Express.Multer.File>) {
+  async uploadForTask(
+    userId: number,
+    taskId: number,
+    files: Array<Express.Multer.File>,
+  ) {
     const admin = await this.isAdmin(userId);
     const can = admin || (await this.canAccessTaskFile(userId, taskId));
     if (!can) throw new ForbiddenException('Not allowed');
     const created: FileRecord[] = [];
     for (const f of files) {
-      const stored = await this.storage.uploadBuffer(f.buffer, f.originalname, f.mimetype);
+      const stored = await this.storage.uploadBuffer(
+        f.buffer,
+        f.originalname,
+        f.mimetype,
+      );
       const rec = await this.prisma.file.create({
         data: {
           filename: f.originalname,
@@ -94,19 +109,34 @@ export class FileService {
       select: { reporterId: true },
     });
     const recipients = new Set<number>(
-      watchers.map((w) => w.userId).concat(assignee?.userId ?? [], reporter?.reporterId ?? []),
+      watchers
+        .map((w) => w.userId)
+        .concat(assignee?.userId ?? [], reporter?.reporterId ?? []),
     );
     recipients.delete(userId);
-    await this.notifications.notifyTaskFilesUploaded(taskId, [...recipients], userId, created.length);
+    await this.notifications.notifyTaskFilesUploaded(
+      taskId,
+      [...recipients],
+      userId,
+      created.length,
+    );
     return created;
   }
 
-  async uploadForSprintTask(userId: number, sprintTaskId: number, files: Array<Express.Multer.File>) {
+  async uploadForSprintTask(
+    userId: number,
+    sprintTaskId: number,
+    files: Array<Express.Multer.File>,
+  ) {
     const can = await this.canAccessSprintFile(userId, sprintTaskId);
     if (!can) throw new ForbiddenException('Not allowed');
     const created: FileRecord[] = [];
     for (const f of files) {
-      const stored = await this.storage.uploadBuffer(f.buffer, f.originalname, f.mimetype);
+      const stored = await this.storage.uploadBuffer(
+        f.buffer,
+        f.originalname,
+        f.mimetype,
+      );
       const rec = await this.prisma.file.create({
         data: {
           filename: f.originalname,
@@ -122,10 +152,17 @@ export class FileService {
     }
     const st = await this.prisma.sprintTask.findUnique({
       where: { id: sprintTaskId },
-      select: { id: true, titre: true, sprint: { select: { id: true, conversationId: true } } },
+      select: {
+        id: true,
+        titre: true,
+        sprint: { select: { id: true, conversationId: true } },
+      },
     });
     if (st?.sprint.conversationId) {
-      const names = created.map((c) => c.filename).slice(0, 3).join(', ');
+      const names = created
+        .map((c) => c.filename)
+        .slice(0, 3)
+        .join(', ');
       const more = created.length > 3 ? ` (+${created.length - 3} more)` : '';
       const content = `Uploaded ${created.length} file(s) to sprint task #${st.id} "${st.titre}": ${names}${more}`;
       try {
@@ -137,17 +174,28 @@ export class FileService {
     return created;
   }
 
-  async uploadForMessage(userId: number, messageId: string, files: Array<Express.Multer.File>) {
+  async uploadForMessage(
+    userId: number,
+    messageId: string,
+    files: Array<Express.Multer.File>,
+  ) {
     const message = await this.prisma.message.findUnique({
       where: { id: messageId },
       select: { conversationId: true },
     });
     if (!message) throw new NotFoundException('Message not found');
-    const can = await this.isConversationParticipant(userId, message.conversationId);
+    const can = await this.isConversationParticipant(
+      userId,
+      message.conversationId,
+    );
     if (!can) throw new ForbiddenException('Not allowed');
     const created: FileRecord[] = [];
     for (const f of files) {
-      const stored = await this.storage.uploadBuffer(f.buffer, f.originalname, f.mimetype);
+      const stored = await this.storage.uploadBuffer(
+        f.buffer,
+        f.originalname,
+        f.mimetype,
+      );
       const rec = await this.prisma.file.create({
         data: {
           filename: f.originalname,
@@ -165,7 +213,9 @@ export class FileService {
       where: { conversationId: message.conversationId },
       select: { userId: true },
     });
-    const recipients = participants.map((p) => p.userId).filter((id) => id !== userId);
+    const recipients = participants
+      .map((p) => p.userId)
+      .filter((id) => id !== userId);
     await this.notifications.notifyChatFilesShared(
       message.conversationId,
       recipients,
@@ -232,18 +282,32 @@ export class FileService {
     return file;
   }
 
-  async asStream(userId: number, id: string): Promise<{ stream: Readable; mimeType: string; size: number; filename: string }> {
+  async asStream(
+    userId: number,
+    id: string,
+  ): Promise<{
+    stream: Readable;
+    mimeType: string;
+    size: number;
+    filename: string;
+  }> {
     const file = await this.getMeta(userId, id);
     const path = this.storage.getPathForKey(file.storageKey);
     const st = statSync(path);
-    return { stream: createReadStream(path), mimeType: file.mimeType, size: st.size, filename: file.filename };
+    return {
+      stream: createReadStream(path),
+      mimeType: file.mimeType,
+      size: st.size,
+      filename: file.filename,
+    };
   }
 
   async softDelete(userId: number, id: string) {
     const file = await this.prisma.file.findUnique({ where: { id } });
     if (!file || file.deletedAt) throw new NotFoundException('File not found');
     const admin = await this.isAdmin(userId);
-    if (!admin && file.uploaderId !== userId) throw new ForbiddenException('Not allowed');
+    if (!admin && file.uploaderId !== userId)
+      throw new ForbiddenException('Not allowed');
     await this.prisma.file.update({
       where: { id },
       data: { deletedAt: new Date() },

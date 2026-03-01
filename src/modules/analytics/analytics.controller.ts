@@ -14,4 +14,3 @@ export class AnalyticsController {
     return this.analytics.dashboardSummary({ period, fromDate, toDate });
   }
 }
-
