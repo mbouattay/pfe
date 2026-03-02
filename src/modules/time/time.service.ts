@@ -19,6 +19,23 @@ export class TimeService {
   }
 
   async startTimer(userId: number, taskId: number) {
+    if (taskId) {
+      const user = await this.prisma.utilisateur.findUnique({
+        where: { id: userId },
+        select: { role: true },
+      });
+      const isAdmin = user?.role === 'ADMIN';
+      if (!isAdmin) {
+        const assigned = await this.prisma.taskAssignment.findFirst({
+          where: { taskId, userId },
+        });
+        if (!assigned) {
+          throw new ForbiddenException(
+            'Not allowed to track time on this task',
+          );
+        }
+      }
+    }
     const existing = await this.prisma.activeTimer.findUnique({
       where: { userId },
     });
@@ -133,6 +150,23 @@ export class TimeService {
       billableRate?: number | null;
     },
   ) {
+    if (data.taskId) {
+      const user = await this.prisma.utilisateur.findUnique({
+        where: { id: userId },
+        select: { role: true },
+      });
+      const isAdmin = user?.role === 'ADMIN';
+      if (!isAdmin) {
+        const assigned = await this.prisma.taskAssignment.findFirst({
+          where: { taskId: data.taskId, userId },
+        });
+        if (!assigned) {
+          throw new ForbiddenException(
+            'Not allowed to track time on this task',
+          );
+        }
+      }
+    }
     const { startTime, endTime } = data;
     const duration = Math.max(
       0,
@@ -333,5 +367,18 @@ export class TimeService {
 
   emitTimerState(): void {
     return;
+  }
+
+  async stopTimersForTask(taskId: number) {
+    const timers = await this.prisma.activeTimer.findMany({
+      where: { taskId },
+    });
+    for (const t of timers) {
+      try {
+        await this.stopTimer(t.userId);
+      } catch {
+        // ignore failures to stop
+      }
+    }
   }
 }

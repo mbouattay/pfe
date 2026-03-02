@@ -70,6 +70,45 @@ export class ChatService {
     });
   }
 
+  async getOrCreateSprintTaskConversation(
+    currentUserId: number,
+    sprintTaskId: number,
+  ) {
+    const st = await this.prisma.sprintTask.findUnique({
+      where: { id: sprintTaskId },
+      include: { sprint: { include: { participants: true } } },
+    });
+    if (!st) {
+      throw new NotFoundException('Sprint task not found');
+    }
+    const existing = await this.prisma.conversation.findFirst({
+      where: { type: 'TASK', sprintTaskId },
+      include: { participants: true },
+    });
+    if (existing) {
+      return existing;
+    }
+    const participantIds = Array.from(
+      new Set<number>([
+        currentUserId,
+        ...st.sprint.participants.map((p) => p.userId),
+      ]),
+    );
+    return this.prisma.conversation.create({
+      data: {
+        type: 'TASK',
+        sprintTask: { connect: { id: sprintTaskId } },
+        createdBy: currentUserId,
+        participants: {
+          createMany: {
+            data: participantIds.map((userId) => ({ userId })),
+          },
+        },
+      },
+      include: { participants: true },
+    });
+  }
+
   async listConversations(userId: number) {
     const list = await this.prisma.conversation.findMany({
       where: {

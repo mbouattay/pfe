@@ -7,32 +7,62 @@ import { CreateSprintDto, UpdateSprintDto } from './sprint.dto';
 export class SprintService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateSprintDto) {
-    return this.prisma.sprint.create({
-      data: {
-        nom: dto.nom,
-        status: dto.status ?? SprintStatus.PLANIFIE,
-        goal: dto.goal,
-        dateDebut: new Date(dto.dateDebut),
-        dateFin: new Date(dto.dateFin),
-        totalStoryPoints: dto.totalStoryPoints ?? 0,
-        webProject: {
-          connect: { id: dto.webProjectId },
+  async create(dto: CreateSprintDto, creatorId: number) {
+    const admins = await this.prisma.utilisateur.findMany({
+      where: { role: 'ADMIN' },
+      select: { id: true },
+    });
+    const result = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.sprint.create({
+        data: {
+          nom: dto.nom,
+          status: dto.status ?? SprintStatus.PLANIFIE,
+          goal: dto.goal,
+          dateDebut: new Date(dto.dateDebut),
+          dateFin: new Date(dto.dateFin),
+          totalStoryPoints: dto.totalStoryPoints ?? 0,
+          webProject: {
+            connect: { id: dto.webProjectId },
+          },
         },
-      },
-      include: {
-        webProject: {
-          include: {
-            project: {
-              include: {
-                client: true,
-              },
+      });
+      const conversation = await tx.conversation.create({
+        data: {
+          type: 'SPRINT',
+          createdBy: creatorId,
+          participants: {
+            createMany: {
+              data: Array.from(
+                new Set<number>([creatorId, ...admins.map((a) => a.id)]),
+              ).map((userId) => ({
+                userId,
+              })),
             },
           },
         },
-        sprintTasks: true,
-      },
+      });
+      await tx.sprint.update({
+        where: { id: created.id },
+        data: { conversationId: conversation.id },
+      });
+      const full = await tx.sprint.findUnique({
+        where: { id: created.id },
+        include: {
+          webProject: {
+            include: {
+              project: {
+                include: {
+                  client: true,
+                },
+              },
+            },
+          },
+          sprintTasks: true,
+        },
+      });
+      return { sprint: full!, conversationId: conversation.id };
     });
+    return { ...result.sprint, conversationId: result.conversationId };
   }
 
   async findAll() {

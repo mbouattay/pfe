@@ -13,7 +13,7 @@ import {
   CreateMarketingProjectDto,
   UpdateMarketingProjectDto,
 } from './marketingProject.dto';
-import { Public } from 'src/common/decorators/public.decorator';
+import { ForbiddenException, Req } from '@nestjs/common';
 
 @Controller('marketing-projects')
 export class MarketingProjectController {
@@ -22,29 +22,35 @@ export class MarketingProjectController {
   ) {}
 
   @Post()
-  @Public()
-  create(@Body() dto: CreateMarketingProjectDto) {
+  create(
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Body() dto: CreateMarketingProjectDto,
+  ) {
+    if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
     return this.marketingProjectService.create(dto);
   }
 
   @Get()
-  @Public()
   findAll() {
     return this.marketingProjectService.findAll();
   }
 
   @Patch(':id')
-  @Public()
   update(
     @Param('id', ParseIntPipe) id: number,
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
     @Body() dto: UpdateMarketingProjectDto,
   ) {
+    if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
     return this.marketingProjectService.update(id, dto);
   }
 
   @Delete(':id')
-  @Public()
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
     return this.marketingProjectService.remove(id);
   }
 }

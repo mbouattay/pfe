@@ -20,6 +20,9 @@ import { MailModule } from './common/mail/mail.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { NotificationModule } from './modules/notifications/notification.module';
 import { TimeModule } from './modules/time/time.module';
+import { FileModule } from './modules/files/file.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
 
 @Module({
   imports: [
@@ -33,6 +36,16 @@ import { TimeModule } from './modules/time/time.module';
     AdministrateurModule,
     WebProjectModule,
     MarketingProjectModule,
+    ChatModule,
+    NotificationModule,
+    TimeModule,
+    TaskModule,
+    SprintModule,
+    SprintTaskModule,
+    AiModule,
+    FileModule,
+    AnalyticsModule,
+    CalendarModule,
   ],
   controllers: [AppController],
   providers: [
