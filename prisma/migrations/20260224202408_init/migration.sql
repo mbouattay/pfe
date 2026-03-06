@@ -5,4 +5,4 @@
 
 */
 -- AlterTable
-ALTER TABLE "web_projects" ADD COLUMN     "caiher_de_charger" TEXT NOT NULL;
+ALTER TABLE "web_projects" ADD COLUMN     "caiher_de_charger" TEXT NOT NULL DEFAULT '';

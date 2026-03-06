@@ -101,6 +101,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       .emit('message:read', { userId, ...res });
   }
 
+  emitNewMessage(conversationId: string, message: any) {
+    this.server.to(this.room(conversationId)).emit('message:new', message);
+  }
+
   bindEvents(server: Server) {
     server.on('connection', (socket: AuthedSocket) => {
       socket.on('join', (conversationId: string) =>

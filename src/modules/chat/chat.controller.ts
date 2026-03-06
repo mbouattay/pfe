@@ -10,6 +10,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
+import { ChatGateway } from './chat.gateway';
 import { CreateDirectDto } from './dto/create-direct.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { EditMessageDto } from './dto/edit-message.dto';
@@ -19,7 +20,10 @@ type AuthedReq = { user: { id: number } };
 
 @Controller('chat')
 export class ChatController {
-  constructor(private readonly chat: ChatService) {}
+  constructor(
+    private readonly chat: ChatService,
+    private readonly chatGateway: ChatGateway,
+  ) {}
 
   @Get('conversations')
   listConversations(@Req() req: AuthedReq) {
@@ -57,12 +61,19 @@ export class ChatController {
   }
 
   @Post('conversations/:id/messages')
-  send(
+  async send(
     @Req() req: AuthedReq,
     @Param('id') id: string,
     @Body() dto: SendMessageDto,
   ) {
-    return this.chat.sendMessage(id, req.user.id, dto.content, dto.replyToId);
+    const message = await this.chat.sendMessage(
+      id,
+      req.user.id,
+      dto.content,
+      dto.replyToId,
+    );
+    this.chatGateway.emitNewMessage(id, message);
+    return message;
   }
 
   @Post('conversations/:id/read')

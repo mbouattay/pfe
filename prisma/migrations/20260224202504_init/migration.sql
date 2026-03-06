@@ -6,5 +6,4 @@
 
 */
 -- AlterTable
-ALTER TABLE "web_projects" DROP COLUMN "caiher_de_charger",
-ADD COLUMN     "cahier_de_charger" TEXT NOT NULL;
+ALTER TABLE "web_projects" RENAME COLUMN "caiher_de_charger" TO "cahier_de_charger";
