@@ -18,6 +18,7 @@ interface AuthedSocket extends Socket {
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
+  private onlineUsers = new Map<number, Set<string>>();
 
   constructor(
     private readonly jwt: JwtService,
@@ -48,10 +49,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
     client.data.userId = (decoded as Record<string, unknown>).sub as number;
+    const userId = client.data.userId as number;
+    if (!this.onlineUsers.has(userId)) {
+      this.onlineUsers.set(userId, new Set());
+    }
+    this.onlineUsers.get(userId)!.add(client.id);
+    this.server.emit('presence:update', { userId, online: true });
   }
 
-  handleDisconnect(_client: AuthedSocket) {
-    void _client;
+  handleDisconnect(client: AuthedSocket) {
+    const userId = client.data?.userId as number | undefined;
+    if (userId) {
+      const sockets = this.onlineUsers.get(userId);
+      if (sockets) {
+        sockets.delete(client.id);
+        if (sockets.size === 0) {
+          this.onlineUsers.delete(userId);
+          this.server.emit('presence:update', { userId, online: false });
+        }
+      }
+    }
   }
 
   async onJoin(client: AuthedSocket, conversationId: string) {
@@ -120,6 +137,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       );
       socket.on('typing:stop', (cid: string) => this.onTypingStop(socket, cid));
       socket.on('message:read', (cid: string) => this.onRead(socket, cid));
+      socket.on('presence:get', () => {
+        const onlineIds = Array.from(this.onlineUsers.keys());
+        socket.emit('presence:list', onlineIds);
+      });
     });
   }
 

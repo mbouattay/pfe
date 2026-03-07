@@ -166,6 +166,14 @@ export class ChatService {
         isEdited: true,
         replyToId: true,
         readBy: { select: { userId: true, readAt: true } },
+        files: {
+          select: {
+            id: true,
+            filename: true,
+            mimeType: true,
+            size: true,
+          },
+        },
       },
     });
     return messages;
@@ -195,6 +203,14 @@ export class ChatService {
       },
       include: {
         readBy: true,
+        files: {
+          select: {
+            id: true,
+            filename: true,
+            mimeType: true,
+            size: true,
+          },
+        },
       },
     });
     await this.prisma.conversation.update({

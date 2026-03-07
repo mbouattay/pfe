@@ -23,6 +23,7 @@ import { TimeModule } from './modules/time/time.module';
 import { FileModule } from './modules/files/file.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { CalendarModule } from './modules/calendar/calendar.module';
     FileModule,
     AnalyticsModule,
     CalendarModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [

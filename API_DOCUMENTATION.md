@@ -1471,11 +1471,101 @@ Error Responses
 
 ------------------------------------------------------------------------
 
+Users Module
+
+1) Get My Team
+
+Endpoint
+GET /users/my-team
+
+Description
+Returns all users who share at least one Project with the current user. Shared involvement is detected via:
+- TaskAssignment (assigned to a marketing Task within a Project)
+- SprintParticipant (participant in a Sprint within a WebProject of a Project)
+- Task reporter (reporter of a marketing Task within a Project)
+
+Additionally includes:
+- The client user associated with each Project
+- All ADMIN users in the system
+
+Authentication
+Required — Authorization: Bearer
+
+Response
+Status Code: 200 OK
+Body: Array<User>
+
+User
+- id | number | utilisateur.id
+- email | string
+- role | "CLIENT" | "EMPLOYER" | "ADMIN"
+- nom | string? | From Employer.nom (EMPLOYER)
+- prenom | string? | From Employer.prenom (EMPLOYER)
+- nomSociete | string? | From Client.nomSociete (CLIENT)
+- avatar | string? | Avatar URL if set
+
+Notes
+- Excludes the current user from the results
+- May include duplicates across sources but the response is de-duplicated
+
+Example Response
+[
+  {
+    "id": 12,
+    "email": "dev@acme.com",
+    "role": "EMPLOYER",
+    "nom": "Doe",
+    "prenom": "Jane",
+    "avatar": "https://cdn.example.com/a.jpg"
+  },
+  {
+    "id": 3,
+    "email": "client@co.com",
+    "role": "CLIENT",
+    "nomSociete": "Client Co"
+  },
+  {
+    "id": 1,
+    "email": "admin@system",
+    "role": "ADMIN"
+  }
+]
+
+------------------------------------------------------------------------
+
 WebSocket Events
 
 /chat
 - Client → Server: join, message:send, typing:start, typing:stop, message:read
 - Server → Client: joined, message:new, typing:start, typing:stop, message:read, error
+
+/chat — Message Object
+
+Fields
+- id | string
+- content | string
+- senderId | number
+- createdAt | ISO date
+- updatedAt | ISO date
+- isEdited | boolean
+- replyToId | string? | Message id being replied to
+- readBy | Array<{ userId: number, readAt: ISO }>
+- files | Array<{ id: string, filename: string, mimeType: string, size: number }>
+
+Example
+{
+  "id": "msg_1",
+  "content": "Hello team!",
+  "senderId": 2,
+  "createdAt": "2026-03-10T10:00:00.000Z",
+  "updatedAt": "2026-03-10T10:00:00.000Z",
+  "isEdited": false,
+  "replyToId": null,
+  "readBy": [{ "userId": 2, "readAt": "2026-03-10T10:00:00.000Z" }],
+  "files": [
+    { "id": "file_1", "filename": "design.png", "mimeType": "image/png", "size": 123456 }
+  ]
+}
 
 /notifications
 - Server → Client: notification:new, unread:count
