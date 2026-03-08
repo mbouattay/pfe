@@ -49,7 +49,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
     client.data.userId = (decoded as Record<string, unknown>).sub as number;
-    const userId = client.data.userId as number;
+    const userId = client.data.userId;
     if (!this.onlineUsers.has(userId)) {
       this.onlineUsers.set(userId, new Set());
     }
@@ -58,7 +58,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(client: AuthedSocket) {
-    const userId = client.data?.userId as number | undefined;
+    const userId = client.data?.userId;
     if (userId) {
       const sockets = this.onlineUsers.get(userId);
       if (sockets) {

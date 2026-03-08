@@ -23,7 +23,7 @@ export class MarketingProjectController {
 
   @Post()
   create(
-    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
     @Body() dto: CreateMarketingProjectDto,
   ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
@@ -38,7 +38,7 @@ export class MarketingProjectController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
     @Body() dto: UpdateMarketingProjectDto,
   ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
@@ -47,7 +47,7 @@ export class MarketingProjectController {
 
   @Delete(':id')
   remove(
-    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
     @Param('id', ParseIntPipe) id: number,
   ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');

@@ -6,7 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ClientModule } from './modules/clients/client.module';
 import { GradeModule } from './modules/grades/grade.module';
-import { EmployerModule } from './modules/employeur/employeur.module';
+import { EmployeeModule } from './modules/employee/employee.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AdministrateurModule } from './modules/administrateur/administrateur.module';
 import { WebProjectModule } from './modules/webProject/webProject.module';
@@ -33,7 +33,7 @@ import { UsersModule } from './modules/users/users.module';
     AuthModule,
     ClientModule,
     GradeModule,
-    EmployerModule,
+    EmployeeModule,
     AdministrateurModule,
     WebProjectModule,
     MarketingProjectModule,

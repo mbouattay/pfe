@@ -146,7 +146,7 @@ export class TaskController {
   @Patch('comments/:id')
   updateComment(
     @Param('id') commentId: string,
-    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
     @Body() dto: UpdateCommentDto,
   ) {
     return this.taskService.updateComment(commentId, req.user, dto);
@@ -155,7 +155,7 @@ export class TaskController {
   @Delete('comments/:id')
   deleteComment(
     @Param('id') commentId: string,
-    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
   ) {
     return this.taskService.deleteComment(commentId, req.user);
   }

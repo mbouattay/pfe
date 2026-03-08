@@ -2,7 +2,7 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 type AppUser = {
   id: number;
-  role: 'CLIENT' | 'EMPLOYER' | 'ADMIN';
+  role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN';
 } & Record<string, unknown>;
 
 export const CurrentUser = createParamDecorator(

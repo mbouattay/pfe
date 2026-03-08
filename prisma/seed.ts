@@ -14,9 +14,9 @@ async function main() {
     bcrypt.hash('Admin@123', saltRounds),
     bcrypt.hash('Client1@123', saltRounds),
     bcrypt.hash('Client2@123', saltRounds),
-    bcrypt.hash('Employer1@123', saltRounds),
-    bcrypt.hash('Employer2@123', saltRounds),
-    bcrypt.hash('Employer3@123', saltRounds),
+    bcrypt.hash('Employee1@123', saltRounds),
+    bcrypt.hash('Employee2@123', saltRounds),
+    bcrypt.hash('Employee3@123', saltRounds),
   ]);
 
   const adminUser = await prisma.utilisateur.upsert({
@@ -103,9 +103,9 @@ async function main() {
     create: {
       email: 'dev1@duality.local',
       password: pwdEmp1,
-      role: 'EMPLOYER',
+      role: 'EMPLOYEE',
       telephone: '300-000-0001',
-      employer: {
+      employee: {
         create: {
           nom: 'Martin',
           prenom: 'Alice',
@@ -115,8 +115,8 @@ async function main() {
     },
     update: {
       password: pwdEmp1,
-      role: 'EMPLOYER',
-      employer: {
+      role: 'EMPLOYEE',
+      employee: {
         upsert: {
           create: { nom: 'Martin', prenom: 'Alice', gradeId: mid.id },
           update: { nom: 'Martin', prenom: 'Alice', gradeId: mid.id },
@@ -130,9 +130,9 @@ async function main() {
     create: {
       email: 'dev2@duality.local',
       password: pwdEmp2,
-      role: 'EMPLOYER',
+      role: 'EMPLOYEE',
       telephone: '300-000-0002',
-      employer: {
+      employee: {
         create: {
           nom: 'Durand',
           prenom: 'Bob',
@@ -142,8 +142,8 @@ async function main() {
     },
     update: {
       password: pwdEmp2,
-      role: 'EMPLOYER',
-      employer: {
+      role: 'EMPLOYEE',
+      employee: {
         upsert: {
           create: { nom: 'Durand', prenom: 'Bob', gradeId: junior.id },
           update: { nom: 'Durand', prenom: 'Bob', gradeId: junior.id },
@@ -157,9 +157,9 @@ async function main() {
     create: {
       email: 'pm@duality.local',
       password: pwdEmp3,
-      role: 'EMPLOYER',
+      role: 'EMPLOYEE',
       telephone: '300-000-0003',
-      employer: {
+      employee: {
         create: {
           nom: 'Leroy',
           prenom: 'Chloe',
@@ -169,8 +169,8 @@ async function main() {
     },
     update: {
       password: pwdEmp3,
-      role: 'EMPLOYER',
-      employer: {
+      role: 'EMPLOYEE',
+      employee: {
         upsert: {
           create: { nom: 'Leroy', prenom: 'Chloe', gradeId: senior.id },
           update: { nom: 'Leroy', prenom: 'Chloe', gradeId: senior.id },

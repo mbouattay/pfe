@@ -23,7 +23,7 @@ export class SprintController {
     @Req()
     req: {
       user: {
-        role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN';
+        role?: 'CLIENT' | 'EMPLOYEE' | 'ADMIN';
         id?: number;
         sub?: number;
       };
@@ -49,7 +49,7 @@ export class SprintController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
     @Body() dto: UpdateSprintDto,
   ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
@@ -58,7 +58,7 @@ export class SprintController {
 
   @Delete(':id')
   remove(
-    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
     @Param('id', ParseIntPipe) id: number,
   ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');

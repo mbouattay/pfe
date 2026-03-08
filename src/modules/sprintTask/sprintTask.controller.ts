@@ -68,7 +68,7 @@ export class SprintTaskController {
   @Patch('comments/:id')
   updateComment(
     @Param('id') commentId: string,
-    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
     @Body() dto: import('../task/dto/comment.dto').UpdateCommentDto,
   ) {
     return this.sprintTaskService.updateComment(commentId, req.user, dto);
@@ -77,7 +77,7 @@ export class SprintTaskController {
   @Delete('comments/:id')
   deleteComment(
     @Param('id') commentId: string,
-    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { id: number; role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
   ) {
     return this.sprintTaskService.deleteComment(commentId, req.user);
   }

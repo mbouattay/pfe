@@ -18,7 +18,7 @@ import {
 } from './dto/time.dto';
 
 type AuthedReq = {
-  user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' };
+  user: { id: number; role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' };
 };
 
 @Controller('time')

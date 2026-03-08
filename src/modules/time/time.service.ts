@@ -190,7 +190,7 @@ export class TimeService {
 
   async listEntries(params: {
     requesterId: number;
-    requesterRole: 'CLIENT' | 'EMPLOYER' | 'ADMIN';
+    requesterRole: 'CLIENT' | 'EMPLOYEE' | 'ADMIN';
     userId?: number;
     taskId?: number;
     marketingProjectId?: number;
@@ -229,7 +229,7 @@ export class TimeService {
 
   async updateEntry(
     entryId: string,
-    user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' },
+    user: { id: number; role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' },
     data: Partial<{
       description: string;
       startTime: Date;
@@ -274,7 +274,7 @@ export class TimeService {
 
   async deleteEntry(
     entryId: string,
-    user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' },
+    user: { id: number; role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' },
   ) {
     const existing = await this.prisma.timeEntry.findUnique({
       where: { id: entryId },

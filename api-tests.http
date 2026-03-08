@@ -159,10 +159,10 @@ Content-Type: application/json
 
 { "nom": "Développeur Lead" }
 
-# ========== EMPLOYERS ==========
+# ========== EMPLOYEES ==========
 
 ### 18. Créer un employé (gradeId doit exister, ex: 1)
-POST {{baseUrl}}/employers
+POST {{baseUrl}}/employees
 Content-Type: application/json
 
 {
@@ -174,7 +174,7 @@ Content-Type: application/json
 }
 
 ### 19. Créer un employé avec optionnels
-POST {{baseUrl}}/employers
+POST {{baseUrl}}/employees
 Content-Type: application/json
 
 {
@@ -188,13 +188,13 @@ Content-Type: application/json
 }
 
 ### 20. Lister tous les employés (getAll)
-GET {{baseUrl}}/employers
+GET {{baseUrl}}/employees
 
 ### 21. Récupérer un employé par ID
-GET {{baseUrl}}/employers/1
+GET {{baseUrl}}/employees/1
 
 ### 22. Modifier un employé
-PATCH {{baseUrl}}/employers/1
+PATCH {{baseUrl}}/employees/1
 Content-Type: application/json
 
 {
@@ -203,13 +203,13 @@ Content-Type: application/json
 }
 
 ### 23. Supprimer un employé
-DELETE {{baseUrl}}/employers/1
+DELETE {{baseUrl}}/employees/1
 
 ### 24. Erreur 404 - Employé introuvable
-GET {{baseUrl}}/employers/999
+GET {{baseUrl}}/employees/999
 
 ### 25. Erreur 400 - Grade invalide (création avec gradeId inexistant)
-POST {{baseUrl}}/employers
+POST {{baseUrl}}/employees
 Content-Type: application/json
 
 {

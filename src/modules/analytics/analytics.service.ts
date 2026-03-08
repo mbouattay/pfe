@@ -155,7 +155,7 @@ export class AnalyticsService {
     ]);
 
     const teamMembers = await this.prisma.utilisateur.count({
-      where: { role: { in: ['EMPLOYER', 'ADMIN'] } },
+      where: { role: { in: ['EMPLOYEE', 'ADMIN'] } },
     });
 
     const recentTasks = await this.prisma.task.findMany({

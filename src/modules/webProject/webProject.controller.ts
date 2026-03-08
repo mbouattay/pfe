@@ -18,7 +18,7 @@ export class WebProjectController {
 
   @Post()
   create(
-    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
     @Body() dto: CreateWebProjectDto,
   ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
@@ -33,7 +33,7 @@ export class WebProjectController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
     @Body() dto: UpdateWebProjectDto,
   ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');
@@ -42,7 +42,7 @@ export class WebProjectController {
 
   @Delete(':id')
   remove(
-    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYER' | 'ADMIN' } },
+    @Req() req: { user: { role?: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' } },
     @Param('id', ParseIntPipe) id: number,
   ) {
     if (req.user?.role !== 'ADMIN') throw new ForbiddenException('Admin only');

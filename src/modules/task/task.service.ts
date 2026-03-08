@@ -389,7 +389,7 @@ export class TaskService {
 
   async updateComment(
     commentId: string,
-    user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' },
+    user: { id: number; role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' },
     dto: UpdateCommentDto,
   ) {
     const existing = await this.prisma.taskComment.findUnique({
@@ -413,7 +413,7 @@ export class TaskService {
 
   async deleteComment(
     commentId: string,
-    user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' },
+    user: { id: number; role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' },
   ) {
     const existing = await this.prisma.taskComment.findUnique({
       where: { id: commentId },

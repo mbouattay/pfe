@@ -1063,11 +1063,11 @@ Clients
 - DELETE /clients/:id
 
 Employees
-- POST /employers
-- GET /employers
-- GET /employers/:id
-- PATCH /employers/:id
-- DELETE /employers/:id
+- POST /employees
+- GET /employees
+- GET /employees/:id
+- PATCH /employees/:id
+- DELETE /employees/:id
 
 Grades
 - POST /grades
@@ -1498,9 +1498,9 @@ Body: Array<User>
 User
 - id | number | utilisateur.id
 - email | string
-- role | "CLIENT" | "EMPLOYER" | "ADMIN"
-- nom | string? | From Employer.nom (EMPLOYER)
-- prenom | string? | From Employer.prenom (EMPLOYER)
+- role | "CLIENT" | "EMPLOYEE" | "ADMIN"
+- nom | string? | From Employee.nom (EMPLOYEE)
+- prenom | string? | From Employee.prenom (EMPLOYEE)
 - nomSociete | string? | From Client.nomSociete (CLIENT)
 - avatar | string? | Avatar URL if set
 
@@ -1513,7 +1513,7 @@ Example Response
   {
     "id": 12,
     "email": "dev@acme.com",
-    "role": "EMPLOYER",
+    "role": "EMPLOYEE",
     "nom": "Doe",
     "prenom": "Jane",
     "avatar": "https://cdn.example.com/a.jpg"

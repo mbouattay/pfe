@@ -16,7 +16,7 @@ export class GradeService {
       select: {
         id: true,
         nom: true,
-        _count: { select: { employers: true } },
+        _count: { select: { employees: true } },
       },
     });
   }
@@ -27,8 +27,8 @@ export class GradeService {
       select: {
         id: true,
         nom: true,
-        _count: { select: { employers: true } },
-        employers: {
+        _count: { select: { employees: true } },
+        employees: {
           select: {
             id: true,
             nom: true,
@@ -85,14 +85,14 @@ export class GradeService {
   async remove(id: number) {
     const grade = await this.prisma.grade.findUnique({
       where: { id },
-      include: { _count: { select: { employers: true } } },
+      include: { _count: { select: { employees: true } } },
     });
     if (!grade) {
       throw new NotFoundException(`Grade #${id} introuvable`);
     }
-    if (grade._count.employers > 0) {
+    if (grade._count.employees > 0) {
       throw new ConflictException(
-        `Impossible de supprimer ce grade : ${grade._count.employers} employé(s) y sont rattaché(s).`,
+        `Impossible de supprimer ce grade : ${grade._count.employees} employé(s) y sont rattaché(s).`,
       );
     }
     await this.prisma.grade.delete({ where: { id } });

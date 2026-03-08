@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class CreateEmployerDto {
+export class CreateEmployeeDto {
   @IsEmail()
   email: string;
 
@@ -37,7 +37,7 @@ export class CreateEmployerDto {
   telephone?: string;
 }
 
-export class UpdateEmployerDto {
+export class UpdateEmployeeDto {
   @IsEmail()
   @IsOptional()
   email?: string;

@@ -846,12 +846,12 @@
                             "raw": "{\n  \"email\": \"employe@duality.com\",\n  \"password\": \"password123\",\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Jean\",\n  \"gradeId\": 1,\n  \"telephone\": \"+33 6 11 22 33 44\",\n  \"avatar\": \"https://example.com/avatar.png\"\n}"
                         },
                         "url": {
-                            "raw": "{{baseUrl}}/employers",
+                            "raw": "{{baseUrl}}/employees",
                             "host": [
                                 "{{baseUrl}}"
                             ],
                             "path": [
-                                "employers"
+                                "employees"
                             ]
                         },
                         "description": "🔐 Route protégée — Token requis\n\nCrée un nouvel employé. Le `gradeId` doit correspondre à un grade existant. `telephone` et `avatar` sont optionnels."
@@ -862,12 +862,12 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/employers",
+                            "raw": "{{baseUrl}}/employees",
                             "host": [
                                 "{{baseUrl}}"
                             ],
                             "path": [
-                                "employers"
+                                "employees"
                             ]
                         },
                         "description": "🔐 Route protégée — Token requis"
@@ -878,12 +878,12 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/employers/1",
+                            "raw": "{{baseUrl}}/employees/1",
                             "host": [
                                 "{{baseUrl}}"
                             ],
                             "path": [
-                                "employers",
+                                "employees",
                                 "1"
                             ]
                         },
@@ -905,12 +905,12 @@
                             "raw": "{\n  \"nom\": \"Martin\",\n  \"prenom\": \"Pierre\",\n  \"gradeId\": 2\n}"
                         },
                         "url": {
-                            "raw": "{{baseUrl}}/employers/1",
+                            "raw": "{{baseUrl}}/employees/1",
                             "host": [
                                 "{{baseUrl}}"
                             ],
                             "path": [
-                                "employers",
+                                "employees",
                                 "1"
                             ]
                         },
@@ -922,12 +922,12 @@
                     "request": {
                         "method": "DELETE",
                         "url": {
-                            "raw": "{{baseUrl}}/employers/1",
+                            "raw": "{{baseUrl}}/employees/1",
                             "host": [
                                 "{{baseUrl}}"
                             ],
                             "path": [
-                                "employers",
+                                "employees",
                                 "1"
                             ]
                         },
@@ -1856,7 +1856,7 @@
                             "code": 200,
                             "_postman_previewlanguage": "json",
                             "header": [],
-                            "body": "[\n  {\n    \"id\": 12,\n    \"email\": \"dev@acme.com\",\n    \"role\": \"EMPLOYER\",\n    \"nom\": \"Doe\",\n    \"prenom\": \"Jane\",\n    \"avatar\": \"https://cdn.example.com/a.jpg\"\n  },\n  {\n    \"id\": 3,\n    \"email\": \"client@co.com\",\n    \"role\": \"CLIENT\",\n    \"nomSociete\": \"Client Co\"\n  },\n  {\n    \"id\": 1,\n    \"email\": \"admin@system\",\n    \"role\": \"ADMIN\"\n  }\n]"
+              "body": "[\n  {\n    \"id\": 12,\n    \"email\": \"dev@acme.com\",\n    \"role\": \"EMPLOYEE\",\n    \"nom\": \"Doe\",\n    \"prenom\": \"Jane\",\n    \"avatar\": \"https://cdn.example.com/a.jpg\"\n  },\n  {\n    \"id\": 3,\n    \"email\": \"client@co.com\",\n    \"role\": \"CLIENT\",\n    \"nomSociete\": \"Client Co\"\n  },\n  {\n    \"id\": 1,\n    \"email\": \"admin@system\",\n    \"role\": \"ADMIN\"\n  }\n]"
                         }
                     ]
                 }

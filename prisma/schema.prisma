@@ -9,7 +9,7 @@ datasource db {
 
 enum Role {
   CLIENT
-  EMPLOYER
+  EMPLOYEE
   ADMIN
 }
 
@@ -67,7 +67,7 @@ model Utilisateur {
   // Relations
   client        Client?
   administrateur Administrateur?
-  employer      Employer?
+  employee      Employee?
   conversationParticipants ConversationParticipant[]
   sentMessages   Message[]
   messageReadStatuses MessageReadStatus[]
@@ -121,14 +121,14 @@ model Administrateur {
 model Grade {
   id  Int    @id @default(autoincrement())
   nom String @unique
-  employers Employer[]
+  employees Employee[]
   @@map("grades")
 }
 // ─────────────────────────────────────────
-// EMPLOYER
+// EMPLOYEE
 // ─────────────────────────────────────────
 
-model Employer {
+model Employee {
   id     Int    @id @default(autoincrement())
   nom    String
   prenom String
@@ -136,7 +136,7 @@ model Employer {
   utilisateur   Utilisateur  @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
   gradeId Int
   grade   Grade @relation(fields: [gradeId], references: [id]) 
-  @@map("employers")
+  @@map("employees")
 }
 
 // ─────────────────────────────────────────

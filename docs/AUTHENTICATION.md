@@ -113,7 +113,7 @@ getProfile(@CurrentUser() user) {
 L'objet `user` contient :
 - `id`: number
 - `email`: string
-- `role`: Role (CLIENT | EMPLOYER | ADMIN)
+- `role`: Role (CLIENT | EMPLOYEE | ADMIN)
 - `avatar`: string | null
 - `telephone`: string | null
 

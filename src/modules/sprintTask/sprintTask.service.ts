@@ -214,7 +214,7 @@ export class SprintTaskService {
 
   async updateComment(
     commentId: string,
-    user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' },
+    user: { id: number; role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' },
     dto: UpdateCommentDto,
   ) {
     const existing = await this.prisma.sprintTaskComment.findUnique({
@@ -237,7 +237,7 @@ export class SprintTaskService {
 
   async deleteComment(
     commentId: string,
-    user: { id: number; role: 'CLIENT' | 'EMPLOYER' | 'ADMIN' },
+    user: { id: number; role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' },
   ) {
     const existing = await this.prisma.sprintTaskComment.findUnique({
       where: { id: commentId },

@@ -12,4 +12,3 @@ export class UsersController {
     return this.users.getMyTeam(req.user.id);
   }
 }
-

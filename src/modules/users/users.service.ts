@@ -4,7 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 type TeamUser = {
   id: number;
   email: string;
-  role: 'CLIENT' | 'EMPLOYER' | 'ADMIN';
+  role: 'CLIENT' | 'EMPLOYEE' | 'ADMIN';
   nom?: string;
   prenom?: string;
   nomSociete?: string;
@@ -61,7 +61,7 @@ export class UsersService {
           email: true,
           role: true,
           avatar: true,
-          employer: { select: { nom: true, prenom: true } },
+          employee: { select: { nom: true, prenom: true } },
           client: { select: { nomSociete: true } },
         },
       });
@@ -71,8 +71,8 @@ export class UsersService {
           id: u.id,
           email: u.email,
           role: u.role,
-          nom: u.employer?.nom,
-          prenom: u.employer?.prenom,
+          nom: u.employee?.nom,
+          prenom: u.employee?.prenom,
           nomSociete: u.client?.nomSociete,
           avatar: u.avatar,
         }));
@@ -113,7 +113,7 @@ export class UsersService {
         email: true,
         role: true,
         avatar: true,
-        employer: { select: { nom: true, prenom: true } },
+        employee: { select: { nom: true, prenom: true } },
         client: { select: { nomSociete: true } },
       },
     });
@@ -121,11 +121,10 @@ export class UsersService {
       id: u.id,
       email: u.email,
       role: u.role,
-      nom: u.employer?.nom,
-      prenom: u.employer?.prenom,
+      nom: u.employee?.nom,
+      prenom: u.employee?.prenom,
       nomSociete: u.client?.nomSociete,
       avatar: u.avatar,
     }));
   }
 }
-
