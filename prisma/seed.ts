@@ -405,6 +405,16 @@ async function main() {
     skipDuplicates: true,
   });
 
+  await prisma.sprintParticipant.createMany({
+    data: [
+      { sprintId: sprint2.id, userId: employerUser1.id, role: 'MEMBER' },
+      { sprintId: sprint2.id, userId: employerUser2.id, role: 'MEMBER' },
+      { sprintId: sprint2.id, userId: employerUser3.id, role: 'LEAD' },
+      { sprintId: sprint2.id, userId: adminUser.id, role: 'ADMIN' },
+    ],
+    skipDuplicates: true,
+  });
+
   const sprintTask1 = await prisma.sprintTask.findFirst({
     where: { sprintId: sprint1.id },
     orderBy: { id: 'asc' },

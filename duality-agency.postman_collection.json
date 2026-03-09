@@ -303,6 +303,64 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "🌐 Web Projects",
+            "item": [
+                {
+                    "name": "Get My Projects",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/web-projects/my-projects",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["web-projects", "my-projects"]
+                        },
+                        "description": "Returns only web projects where the current user is a sprint participant. For ADMIN role, this endpoint returns ALL projects without filtering."
+                    }
+                },
+                {
+                    "name": "Get Project",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/web-projects/1",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["web-projects", "1"]
+                        },
+                        "description": "Returns a single web project by id, including project details, client, and sprint summaries."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📢 Marketing Projects",
+            "item": [
+                {
+                    "name": "Get My Projects",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/marketing-projects/my-projects",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["marketing-projects", "my-projects"]
+                        },
+                        "description": "Returns only marketing projects where the current user is assigned to a task. For ADMIN role, this endpoint returns ALL projects without filtering."
+                    }
+                },
+                {
+                    "name": "Get Project",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/marketing-projects/1",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["marketing-projects", "1"]
+                        },
+                        "description": "Returns a single marketing project by id, including project details and client."
+                    }
+                }
+            ]
         }
     ],
     "auth": {

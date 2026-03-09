@@ -79,6 +79,8 @@ export class TaskService {
     const where: Record<string, unknown> = {};
     if (filters.status) where['status'] = filters.status;
     if (filters.priority) where['priority'] = filters.priority;
+    if (filters.marketingProjectId)
+      where['marketingProjectId'] = filters.marketingProjectId;
     if (filters.assigneeId)
       where['assignment'] = { userId: filters.assigneeId };
     if (filters.from || filters.to) {

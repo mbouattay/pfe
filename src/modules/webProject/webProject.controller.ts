@@ -30,6 +30,24 @@ export class WebProjectController {
     return this.webProjectService.findAll();
   }
 
+  @Get('my-projects')
+  findMyProjects(
+    @Req()
+    req: {
+      user: { id: number; role?: 'CLIENT' | 'EMPLOYEE' | 'ADMIN' };
+    },
+  ) {
+    if (req.user?.role === 'ADMIN') {
+      return this.webProjectService.findAll();
+    }
+    return this.webProjectService.findMyProjects(req.user.id);
+  }
+
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.webProjectService.findOne(id);
+  }
+
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,

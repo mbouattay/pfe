@@ -16,6 +16,11 @@ export class TaskFiltersDto {
   @Type(() => Number)
   assigneeId?: number;
 
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  marketingProjectId?: number;
+
   @IsDateString()
   @IsOptional()
   from?: string;

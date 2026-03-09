@@ -998,6 +998,185 @@ GET /tasks/:id/blocked-by
 
 Endpoints
 POST /tasks/:id/comments
+
+------------------------------------------------------------------------
+
+Web Projects Module
+
+1) Get My Projects
+
+Endpoint
+GET /web-projects/my-projects
+
+Description
+Returns only web projects where the authenticated user is a sprint participant.
+For ADMIN role, returns ALL web projects without filtering.
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Headers
+- Authorization: Bearer <token>
+
+Response
+Status Code: 200 OK
+Example Body
+[
+  {
+    "id": 1,
+    "project": { "id": 10, "titre": "Corporate Website", "client": { "id": 3, "nom": "Client SA" } },
+    "sprints": [
+      { "id": 5, "nom": "Sprint 1", "status": "EN_COURS", "dateDebut": "2026-03-01T00:00:00.000Z", "dateFin": "2026-03-15T00:00:00.000Z", "goal": "MVP", "totalStoryPoints": 21 }
+    ]
+  }
+]
+
+Error Responses
+- 401 | Unauthorized | { "message": "Unauthorized" }
+
+2) Get Project
+
+Endpoint
+GET /web-projects/:id
+
+Description
+Returns a single web project by id, including project details, client, and sprint summaries.
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Params
+- id | number | Yes | Web project id
+
+Response
+Status Code: 200 OK
+Example Body
+{
+  "id": 1,
+  "project": { "id": 10, "titre": "Corporate Website", "client": { "id": 3, "nom": "Client SA" } },
+  "sprints": [
+    { "id": 5, "nom": "Sprint 1", "status": "EN_COURS", "dateDebut": "2026-03-01T00:00:00.000Z", "dateFin": "2026-03-15T00:00:00.000Z", "goal": "MVP", "totalStoryPoints": 21 }
+  ]
+}
+
+Error Responses
+- 401 | Unauthorized | { "message": "Unauthorized" }
+- 404 | Not Found | { "message": "WebProject #<id> not found" }
+
+------------------------------------------------------------------------
+
+Marketing Projects Module
+
+1) Get My Projects
+
+Endpoint
+GET /marketing-projects/my-projects
+
+Description
+Returns only marketing projects where the authenticated user is assigned to at least one task.
+For ADMIN role, returns ALL marketing projects without filtering.
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Headers
+- Authorization: Bearer <token>
+
+Response
+Status Code: 200 OK
+Example Body
+[
+  {
+    "id": 2,
+    "project": { "id": 12, "titre": "Brand Campaign", "client": { "id": 4, "nom": "Acme Corp" } },
+    "tasks": [
+      { "id": 101, "titre": "Design banner", "status": "EN_COURS" }
+    ]
+  }
+]
+
+Error Responses
+- 401 | Unauthorized | { "message": "Unauthorized" }
+
+2) Get Project
+
+Endpoint
+GET /marketing-projects/:id
+
+Description
+Returns a single marketing project by id, including project details and client.
+
+Authentication
+Required — Authorization: Bearer
+
+Request
+Params
+- id | number | Yes | Marketing project id
+
+Response
+Status Code: 200 OK
+Example Body
+{
+  "id": 2,
+  "project": { "id": 12, "titre": "Brand Campaign", "client": { "id": 4, "nom": "Acme Corp" } }
+}
+
+Error Responses
+- 401 | Unauthorized | { "message": "Unauthorized" }
+- 404 | Not Found | { "message": "MarketingProject #<id> not found" }
+
+------------------------------------------------------------------------
+
+Web Projects Module
+
+1) Get My Projects
+
+Endpoint
+GET /web-projects/my-projects
+
+Description
+Returns only web projects where the current user is a sprint participant.
+
+Authentication
+Required — Authorization: Bearer
+
+Response
+Success Response
+Status Code: 200 OK
+
+Error Responses
+- 401 | Unauthorized | { "message": "Unauthorized" }
+
+Business Logic Notes
+- For ADMIN role, this endpoint returns ALL projects without filtering.
+
+------------------------------------------------------------------------
+
+Marketing Projects Module
+
+1) Get My Projects
+
+Endpoint
+GET /marketing-projects/my-projects
+
+Description
+Returns only marketing projects where the current user is assigned to a task.
+
+Authentication
+Required — Authorization: Bearer
+
+Response
+Success Response
+Status Code: 200 OK
+
+Error Responses
+- 401 | Unauthorized | { "message": "Unauthorized" }
+
+Business Logic Notes
+- For ADMIN role, this endpoint returns ALL projects without filtering.
 GET /tasks/:id/comments
 PATCH /tasks/comments/:id
 DELETE /tasks/comments/:id

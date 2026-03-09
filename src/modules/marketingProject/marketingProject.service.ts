@@ -45,6 +45,54 @@ export class MarketingProjectService {
     });
   }
 
+  async findMyProjects(userId: number) {
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        assignment: {
+          userId: userId,
+        },
+      },
+      select: {
+        marketingProjectId: true,
+      },
+    });
+
+    const marketingProjectIds = tasks.map((t) => t.marketingProjectId);
+
+    return this.prisma.marketingProject.findMany({
+      where: {
+        id: {
+          in: marketingProjectIds,
+        },
+      },
+      include: {
+        project: {
+          include: {
+            client: true,
+          },
+        },
+        tasks: true,
+      },
+    });
+  }
+
+  async findOne(id: number) {
+    const project = await this.prisma.marketingProject.findUnique({
+      where: { id },
+      include: {
+        project: {
+          include: {
+            client: true,
+          },
+        },
+      },
+    });
+    if (!project) {
+      throw new NotFoundException(`MarketingProject #${id} not found`);
+    }
+    return project;
+  }
+
   async update(id: number, dto: UpdateMarketingProjectDto) {
     const marketingProject = await this.prisma.marketingProject.findUnique({
       where: { id },

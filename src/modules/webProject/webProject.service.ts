@@ -42,6 +42,86 @@ export class WebProjectService {
     });
   }
 
+  async findMyProjects(userId: number) {
+    const sprintParticipants = await this.prisma.sprintParticipant.findMany({
+      where: {
+        userId,
+      },
+      select: {
+        sprintId: true,
+      },
+    });
+
+    const sprintIds = sprintParticipants.map((p) => p.sprintId);
+
+    const sprints = await this.prisma.sprint.findMany({
+      where: {
+        id: {
+          in: sprintIds,
+        },
+      },
+      select: {
+        webProjectId: true,
+      },
+    });
+
+    const webProjectIds = sprints.map((s) => s.webProjectId);
+
+    return this.prisma.webProject.findMany({
+      where: {
+        id: {
+          in: webProjectIds,
+        },
+      },
+      include: {
+        project: {
+          include: {
+            client: true,
+          },
+        },
+        sprints: {
+          select: {
+            id: true,
+            nom: true,
+            status: true,
+            dateDebut: true,
+            dateFin: true,
+            goal: true,
+            totalStoryPoints: true,
+          },
+        },
+      },
+    });
+  }
+
+  async findOne(id: number) {
+    const webProject = await this.prisma.webProject.findUnique({
+      where: { id },
+      include: {
+        project: {
+          include: {
+            client: true,
+          },
+        },
+        sprints: {
+          select: {
+            id: true,
+            nom: true,
+            status: true,
+            dateDebut: true,
+            dateFin: true,
+            goal: true,
+            totalStoryPoints: true,
+          },
+        },
+      },
+    });
+    if (!webProject) {
+      throw new NotFoundException(`WebProject #${id} not found`);
+    }
+    return webProject;
+  }
+
   async update(id: number, dto: UpdateWebProjectDto) {
     const webProject = await this.prisma.webProject.findUnique({
       where: { id },
