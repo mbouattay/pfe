@@ -704,6 +704,16 @@
                     }
                 },
                 {
+                    "name": "Start Timer (Sprint Task)",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"sprintTaskId\": 10,\n  \"description\": \"Travail sprint\"\n}" },
+                        "url": { "raw": "{{baseUrl}}/time/start", "host": ["{{baseUrl}}"], "path": ["time", "start"] },
+                        "description": "Démarre un timer sur une sprint task."
+                    }
+                },
+                {
                     "name": "Pause Timer",
                     "request": {
                         "method": "POST",
@@ -731,6 +741,15 @@
                         "method": "POST",
                         "header": [{ "key": "Content-Type", "value": "application/json" }],
                         "body": { "mode": "raw", "raw": "{\n  \"taskId\": 1,\n  \"description\": \"Réunion\",\n  \"startTime\": \"2026-02-24T09:00:00.000Z\",\n  \"endTime\": \"2026-02-24T10:00:00.000Z\",\n  \"billable\": true\n}" },
+                        "url": { "raw": "{{baseUrl}}/time/manual", "host": ["{{baseUrl}}"], "path": ["time", "manual"] }
+                    }
+                },
+                {
+                    "name": "Add Manual Entry (Sprint Task)",
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Content-Type", "value": "application/json" }],
+                        "body": { "mode": "raw", "raw": "{\n  \"sprintTaskId\": 10,\n  \"description\": \"Rédaction\",\n  \"startTime\": \"2026-02-24T09:00:00.000Z\",\n  \"endTime\": \"2026-02-24T10:30:00.000Z\",\n  \"billable\": true\n}" },
                         "url": { "raw": "{{baseUrl}}/time/manual", "host": ["{{baseUrl}}"], "path": ["time", "manual"] }
                     }
                 },

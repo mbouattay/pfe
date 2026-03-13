@@ -65,8 +65,9 @@ export class SprintTaskService {
     });
   }
 
-  async findAll() {
+  async findAll(sprintId?: number) {
     return this.prisma.sprintTask.findMany({
+      where: sprintId ? { sprintId } : undefined,
       include: {
         sprint: {
           include: {

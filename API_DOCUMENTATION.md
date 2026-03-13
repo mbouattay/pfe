@@ -1273,7 +1273,7 @@ Required — Authorization: Bearer
 Response
 Status Code: 200 OK
 Example Body
-{ "id": "timer_abc123", "userId": 2, "taskId": 1, "startTime": "2026-03-10T09:00:00.000Z", "lastPausedAt": null, "totalPaused": 0 }
+{ "id": "timer_abc123", "userId": 2, "sprintTaskId": 10, "startTime": "2026-03-10T09:00:00.000Z", "lastPausedAt": null, "totalPaused": 0 }
  
 2) Start Timer
  
@@ -1285,7 +1285,7 @@ Required — Authorization: Bearer
  
 Request
 Body
-{ "taskId": 1 }
+{ "sprintTaskId": 10 }
  
 Response
 Status Code: 201 Created
@@ -1324,7 +1324,7 @@ Endpoint
 POST /time/stop
  
 Description
-Stops the current timer and creates a TimeEntry.
+Stops the current timer and creates a TimeEntry. Emits a TIME_LOGGED notification persisted to database and sent via socket.
  
 Authentication
 Required — Authorization: Bearer
@@ -1332,7 +1332,7 @@ Required — Authorization: Bearer
 Response
 Status Code: 201 Created
 Example Body
-{ "id": "te_abc123", "userId": 2, "taskId": 1, "startTime": "2026-03-10T09:00:00.000Z", "endTime": "2026-03-10T10:00:00.000Z", "duration": 3600, "billable": true }
+{ "id": "te_abc123", "userId": 2, "sprintTaskId": 10, "startTime": "2026-03-10T09:00:00.000Z", "endTime": "2026-03-10T10:00:00.000Z", "duration": 3600, "billable": true }
  
 6) Create Manual Time Entry
  
@@ -1347,7 +1347,7 @@ Required — Authorization: Bearer
  
 Request
 Body
-{ "taskId": 1, "startTime": "ISO", "endTime": "ISO", "description": "string", "billable": true, "billableRate": 100 }
+{ "sprintTaskId": 10, "startTime": "ISO", "endTime": "ISO", "description": "string", "billable": true, "billableRate": 100 }
  
 Response
 Status Code: 201 Created

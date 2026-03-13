@@ -15,6 +15,7 @@ export class AuthService {
   async login(dto: LoginDto) {
     const utilisateur = await this.prisma.utilisateur.findUnique({
       where: { email: dto.email },
+      include: { employee: { select: { nom: true, prenom: true } } },
     });
 
     if (!utilisateur) {
@@ -44,20 +45,26 @@ export class AuthService {
         role: utilisateur.role,
         avatar: utilisateur.avatar,
         telephone: utilisateur.telephone,
+        nom: utilisateur.employee?.nom,
+        prenom: utilisateur.employee?.prenom,
       },
     };
   }
 
   async validateUser(userId: number) {
-    return this.prisma.utilisateur.findUnique({
+    const u = await this.prisma.utilisateur.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        avatar: true,
-        telephone: true,
-      },
+      include: { employee: { select: { nom: true, prenom: true } } },
     });
+    if (!u) return null;
+    return {
+      id: u.id,
+      email: u.email,
+      role: u.role,
+      avatar: u.avatar,
+      telephone: u.telephone,
+      nom: u.employee?.nom,
+      prenom: u.employee?.prenom,
+    };
   }
 }

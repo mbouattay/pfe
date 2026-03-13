@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotificationGateway } from '../notifications/notification.gateway';
+import { NotificationService } from '../notifications/notification.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -12,14 +13,38 @@ export class TimeService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationGateway: NotificationGateway,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async getActiveTimer(userId: number) {
-    return this.prisma.activeTimer.findUnique({ where: { userId } });
+    return this.prisma.activeTimer.findUnique({
+      where: { userId },
+      include: {
+        sprintTask: true,
+        task: true,
+      },
+    });
   }
 
-  async startTimer(userId: number, taskId: number) {
-    if (taskId) {
+  async startTimer(userId: number, taskId?: number, sprintTaskId?: number) {
+    if (sprintTaskId) {
+      const sprintTask = await this.prisma.sprintTask.findFirst({
+        where: { id: sprintTaskId },
+        select: { sprintId: true },
+      });
+      if (!sprintTask) throw new NotFoundException('Sprint task not found');
+      const user = await this.prisma.utilisateur.findUnique({
+        where: { id: userId },
+        select: { role: true },
+      });
+      const isAdmin = user?.role === 'ADMIN';
+      if (!isAdmin) {
+        const participant = await this.prisma.sprintParticipant.findUnique({
+          where: { sprintId_userId: { sprintId: sprintTask.sprintId, userId } },
+        });
+        if (!participant) throw new ForbiddenException('Not allowed');
+      }
+    } else if (taskId) {
       const user = await this.prisma.utilisateur.findUnique({
         where: { id: userId },
         select: { role: true },
@@ -45,7 +70,8 @@ export class TimeService {
     await this.prisma.activeTimer.create({
       data: {
         userId,
-        taskId,
+        taskId: taskId ?? null,
+        sprintTaskId: sprintTaskId ?? null,
         startTime: new Date(),
         lastPausedAt: null,
         totalPaused: 0,
@@ -114,6 +140,7 @@ export class TimeService {
       data: {
         userId,
         taskId: timer.taskId,
+        sprintTaskId: timer.sprintTaskId ?? null,
         description: null,
         startTime: timer.startTime,
         endTime: now,
@@ -129,12 +156,18 @@ export class TimeService {
       entry.taskId ?? null,
       duration,
     );
-    this.notificationGateway.server
-      .to(this.notificationGateway.userRoom(userId))
-      .emit('notification:new', {
+    {
+      const seconds = duration;
+      await this.notificationService.create({
+        userId,
         type: 'SYSTEM',
-        data: { kind: 'TIME_LOGGED', entryId: entry.id, seconds: duration },
+        title: 'Time Logged',
+        message: `You logged ${Math.floor(seconds / 3600)}h ${Math.floor(
+          (seconds % 3600) / 60,
+        )}m on a task.`,
+        data: { kind: 'TIME_LOGGED', entryId: entry.id, seconds },
       });
+    }
     this.emitTimerState();
     return entry;
   }
@@ -143,6 +176,7 @@ export class TimeService {
     userId: number,
     data: {
       taskId?: number;
+      sprintTaskId?: number;
       description?: string;
       startTime: Date;
       endTime: Date;
@@ -150,7 +184,24 @@ export class TimeService {
       billableRate?: number | null;
     },
   ) {
-    if (data.taskId) {
+    if (data.sprintTaskId) {
+      const sprintTask = await this.prisma.sprintTask.findFirst({
+        where: { id: data.sprintTaskId },
+        select: { sprintId: true },
+      });
+      if (!sprintTask) throw new NotFoundException('Sprint task not found');
+      const user = await this.prisma.utilisateur.findUnique({
+        where: { id: userId },
+        select: { role: true },
+      });
+      const isAdmin = user?.role === 'ADMIN';
+      if (!isAdmin) {
+        const participant = await this.prisma.sprintParticipant.findUnique({
+          where: { sprintId_userId: { sprintId: sprintTask.sprintId, userId } },
+        });
+        if (!participant) throw new ForbiddenException('Not allowed');
+      }
+    } else if (data.taskId) {
       const user = await this.prisma.utilisateur.findUnique({
         where: { id: userId },
         select: { role: true },
@@ -176,6 +227,7 @@ export class TimeService {
       data: {
         userId,
         taskId: data.taskId ?? null,
+        sprintTaskId: data.sprintTaskId ?? null,
         description: data.description ?? null,
         startTime,
         endTime,

@@ -219,6 +219,8 @@ model SprintTask {
   files    File[]
   comments SprintTaskComment[]
   conversations Conversation[]
+  activeTimers ActiveTimer[]
+  timeEntries TimeEntry[]
   @@map("sprint_tasks")
 }
 
@@ -270,6 +272,7 @@ model Task {
 model TimeEntry {
   id           String      @id @default(cuid())
   taskId       Int?        @map("task_id")
+  sprintTaskId Int?        @map("sprint_task_id")
   userId       Int         @map("user_id")
   description  String?     @db.Text
   startTime    DateTime    @map("start_time")
@@ -281,10 +284,12 @@ model TimeEntry {
   updatedAt    DateTime    @updatedAt      @map("updated_at")
 
   task         Task?        @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  sprintTask   SprintTask?  @relation(fields: [sprintTaskId], references: [id], onDelete: SetNull)
   user         Utilisateur  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, startTime])
   @@index([taskId])
+  @@index([sprintTaskId])
   @@index([userId, taskId])
   @@map("time_entries")
 }
@@ -292,7 +297,8 @@ model TimeEntry {
 model ActiveTimer {
   id           String      @id @default(cuid())
   userId       Int         @unique @map("user_id")
-  taskId       Int         @map("task_id")
+  taskId       Int?        @map("task_id")
+  sprintTaskId Int?        @map("sprint_task_id")
   startTime    DateTime    @map("start_time")
   lastPausedAt DateTime?   @map("last_paused_at")
   totalPaused  Int         @default(0)
@@ -300,7 +306,8 @@ model ActiveTimer {
   updatedAt    DateTime    @updatedAt      @map("updated_at")
 
   user         Utilisateur @relation(fields: [userId], references: [id], onDelete: Cascade)
-  task         Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  task         Task?       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  sprintTask   SprintTask? @relation(fields: [sprintTaskId], references: [id], onDelete: Cascade)
 
   @@map("active_timers")
 }

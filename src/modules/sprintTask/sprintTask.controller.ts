@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   BadRequestException,
 } from '@nestjs/common';
@@ -23,8 +24,10 @@ export class SprintTaskController {
   }
 
   @Get()
-  findAll() {
-    return this.sprintTaskService.findAll();
+  findAll(@Query('sprintId') sprintId?: string) {
+    return this.sprintTaskService.findAll(
+      sprintId ? Number(sprintId) : undefined,
+    );
   }
 
   @Get(':id')

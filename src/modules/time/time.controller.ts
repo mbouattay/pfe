@@ -32,7 +32,7 @@ export class TimeController {
 
   @Post('start')
   start(@Req() req: AuthedReq, @Body() dto: StartTimerDto) {
-    return this.time.startTimer(req.user.id, dto.taskId);
+    return this.time.startTimer(req.user.id, dto.taskId, dto.sprintTaskId);
   }
 
   @Post('pause')
@@ -54,6 +54,7 @@ export class TimeController {
   manual(@Req() req: AuthedReq, @Body() dto: ManualEntryDto) {
     return this.time.addManualEntry(req.user.id, {
       taskId: dto.taskId,
+      sprintTaskId: dto.sprintTaskId,
       description: dto.description,
       startTime: new Date(dto.startTime),
       endTime: new Date(dto.endTime),

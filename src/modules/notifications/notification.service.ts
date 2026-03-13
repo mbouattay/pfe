@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotificationGateway } from './notification.gateway';
+import { NotificationType, Prisma } from '@prisma/client';
 
 @Injectable()
 export class NotificationService {
@@ -17,6 +18,36 @@ export class NotificationService {
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     });
     return notifications;
+  }
+
+  async create(params: {
+    userId: number;
+    type: NotificationType;
+    title: string;
+    message?: string | null;
+    data?: Record<string, unknown>;
+    senderId?: number | null;
+    expiresAt?: Date | null;
+  }) {
+    const created = await this.prisma.notification.create({
+      data: {
+        type: params.type,
+        title: params.title,
+        content: params.message ?? null,
+        data: (params.data ?? undefined) as unknown as Prisma.InputJsonValue,
+        userId: params.userId,
+        senderId: params.senderId ?? null,
+        expiresAt: params.expiresAt ?? null,
+      },
+    });
+    this.gateway.server
+      .to(this.gateway.userRoom(params.userId))
+      .emit('notification:new', {
+        type: params.type,
+        data: params.data ?? {},
+      });
+    await this.emitUnread(params.userId);
+    return created;
   }
 
   async notifyAddedToSprintChat(
@@ -66,6 +97,7 @@ export class NotificationService {
       where: { userId, readAt: null },
       data: { readAt: new Date() },
     });
+    console.log('markAllRead result:', updated);
     await this.emitUnread(userId);
     return { updated: updated.count };
   }

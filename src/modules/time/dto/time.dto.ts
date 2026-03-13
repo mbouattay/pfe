@@ -10,8 +10,14 @@ import { Type } from 'class-transformer';
 
 export class StartTimerDto {
   @IsInt()
+  @IsOptional()
   @Type(() => Number)
-  taskId: number;
+  taskId?: number;
+
+  @IsInt()
+  @IsOptional()
+  @Type(() => Number)
+  sprintTaskId?: number;
 }
 
 export class ManualEntryDto {
@@ -19,6 +25,11 @@ export class ManualEntryDto {
   @IsOptional()
   @Type(() => Number)
   taskId?: number;
+
+  @IsInt()
+  @IsOptional()
+  @Type(() => Number)
+  sprintTaskId?: number;
 
   @IsString()
   @IsOptional()
